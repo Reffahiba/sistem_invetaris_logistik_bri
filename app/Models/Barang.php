@@ -14,11 +14,11 @@ class Barang extends Model
     protected $fillable = ['gambar_barang', 'nama_barang', 'stok', 'satuan', 'id_kategori', 'id_user'];
 
     public function barangMasuk(){
-        return $this->hasMany(BarangMasuk::class, 'id_barang');
+        return $this->hasMany(BarangMasuk::class, 'id_barang', 'id_barang');
     }
 
     public function kategori(){
-        return $this->belongsTo(Kategori::class, 'id_kategori');
+        return $this->belongsTo(Kategori::class, 'id_kategori', 'id_kategori');
     }
 
     public function user(){

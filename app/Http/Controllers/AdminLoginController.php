@@ -29,7 +29,7 @@ class AdminLoginController extends Controller
         return view('admin/register', $data);
     }
 
-    public function admin_register_proses(Request $request){
+    public function admin_proses_register(Request $request){
         $request->validate([
             'nama_user' => 'required|string|max:255',
             'email' => 'required|email|unique:akun_pengguna,email',
@@ -50,8 +50,8 @@ class AdminLoginController extends Controller
     }
 
     public function admin_proses_login(Request $request){
-        if(Auth::check() && Auth::user()->id_role == 1){
-            return redirect('admin/dashboard');
+        if(Auth::guard('admin')->check() && Auth::guard('admin')->user()->id_role == 1){
+            return redirect('admin_dashboard');
         }
 
         $kredensial = $request->validate([
@@ -69,9 +69,9 @@ class AdminLoginController extends Controller
             ]);
         }
 
-        if(Auth::attempt($kredensial, $remember)){
+        if(Auth::guard('admin')->attempt($kredensial, $remember)){
             $request->session()->regenerate();
-            return redirect()->intended('admin/dashboard');
+            return redirect()->intended('admin_dashboard');
         }
 
         return back()->withErrors([
@@ -84,6 +84,6 @@ class AdminLoginController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect('/admin_login')->with('sukses', 'Telah berhasil logout');
+        return redirect('/admin')->with('sukses', 'Telah berhasil logout');
     }
 }

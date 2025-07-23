@@ -38,8 +38,16 @@ return [
     'guards' => [
         'web' => [
             'driver' => 'session',
-            'provider' => 'users',
+            'provider' => 'akun_pengguna',
         ],
+        'admin' => [
+            'driver' => 'session',
+            'provider' => 'akun_pengguna',
+        ],
+        'pegawai' => [
+            'driver' => 'session',
+            'provider' => 'akun_pengguna'
+        ]
     ],
 
     /*
@@ -60,7 +68,7 @@ return [
     */
 
     'providers' => [
-        'users' => [
+        'akun_pengguna' => [
             'driver' => 'eloquent',
             'model' => App\Models\Akun_Pengguna::class,
         ],

@@ -25,9 +25,9 @@
                             type="email"
                             id="Email"
                             name="email"
-                            placeholder=" "
+                            placeholder="Masukkan Email"
                             class="peer w-full pl-10 pr-4 py-3 bg-white border border-gray-200 text-sm text-gray-800
-                                rounded-lg shadow-sm placeholder-transparent focus:outline-none focus:ring-2 
+                                rounded-lg shadow-sm focus:outline-none focus:ring-2 
                                 focus:ring-blue-400 transition"
                         />
                     </div>
@@ -36,14 +36,14 @@
                 {{-- Password --}}
                 <label for="password" class="relative block mt-4">
                     <div class="flex items-center relative">
-                        <img src="{{ asset('assets/password.png') }}" alt="Password Icon" class="w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none">
+                        <img src="{{ asset('assets/lock.png') }}" alt="Password Icon" class="w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none">
                         <input
                             type="password"
                             id="password"
                             name="password"
-                            placeholder=" "
+                            placeholder="Masukkan Password"
                             class="peer w-full pl-10 pr-4 py-3 bg-white border border-gray-200 text-sm text-gray-800
-                                    rounded-lg shadow-sm placeholder-transparent focus:outline-none focus:ring-2 
+                                    rounded-lg shadow-sm focus:outline-none focus:ring-2 
                                     focus:ring-blue-400 transition"
                         />
                     </div>

@@ -20,13 +20,13 @@
                 {{-- Email --}}
                 <label for="Email" class="relative block">
                     <div class="flex items-center relative">
-                        <img src="{{ asset('assets/user.png') }}" alt="User Icon" class="w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none">
+                        <img src="{{ asset('assets/sms.png') }}" alt="User Icon" class="w-6 h-6 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none">
                         <input
                             type="email"
                             id="Email"
                             name="email"
                             placeholder="Masukkan Email"
-                            class="peer w-full pl-10 pr-4 py-3 bg-white border border-gray-200 text-sm text-gray-800
+                            class="peer w-full pl-12 pr-4 py-3 bg-white border border-gray-200 text-sm text-gray-800
                                 rounded-lg shadow-sm focus:outline-none focus:ring-2 
                                 focus:ring-blue-400 transition"
                         />
@@ -36,13 +36,13 @@
                 {{-- Password --}}
                 <label for="password" class="relative block mt-4">
                     <div class="flex items-center relative">
-                        <img src="{{ asset('assets/password.png') }}" alt="Password Icon" class="w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none">
+                        <img src="{{ asset('assets/lock.png') }}" alt="Password Icon" class="w-6 h-6 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none">
                         <input
                             type="password"
                             id="password"
                             name="password"
                             placeholder="Masukkan Password"
-                            class="peer w-full pl-10 pr-4 py-3 bg-white border border-gray-200 text-sm text-gray-800
+                            class="peer w-full pl-12 pr-4 py-3 bg-white border border-gray-200 text-sm text-gray-800
                                     rounded-lg shadow-sm focus:outline-none focus:ring-2 
                                     focus:ring-blue-400 transition"
                         />
