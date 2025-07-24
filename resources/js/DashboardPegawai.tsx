@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import LayoutPegawai from "@/Layout Pegawai";
+import LayoutPegawai from "@/LayoutPegawai";
 import {Carousel, CarouselContent, CarouselItem, type CarouselApi} from "@/components/ui/carousel";
 
 function DashboardPegawai() {

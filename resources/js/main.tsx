@@ -1,11 +1,11 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import Dashboard from "@/Dashboard";
-import DataBarang from "@/Data Barang";
+import DataBarang from "@/DataBarang";
 import Permintaan from "@/Permintaan";
-import KelolaAkun from "@/Kelola Akun";
-import DashboardPegawai from "@/Dashboard Pegawai";
-import AjukanPermintaan from "@/Ajukan Permintaan";
+import KelolaAkun from "@/KelolaAkun";
+import DashboardPegawai from "@/DashboardPegawai";
+import AjukanPermintaan from "@/AjukanPermintaan";
 import '/resources/css/app.css';
 
 const dashboard = document.getElementById("dashboard-root");
