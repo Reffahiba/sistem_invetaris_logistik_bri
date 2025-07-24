@@ -64,9 +64,7 @@ class AdminLoginController extends Controller
         $user = Akun_Pengguna::where('email', $kredensial['email'])->first();
 
         if (!$user || !in_array($user->id_role, [1])) {
-            return back()->withErrors([
-                'nama_user' => 'Akses hanya diperbolehkan untuk admin Logistik.',
-            ]);
+            return back()->with('alert', 'Akses hanya diperbolehkan untuk admin logistik BRI.');
         }
 
         if(Auth::guard('admin')->attempt($kredensial, $remember)){

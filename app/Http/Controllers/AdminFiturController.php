@@ -72,7 +72,7 @@ class AdminFiturController extends Controller
             'daftarDivisi' => $daftarDivisi,
         ];
         
-        return view('admin.kelola_akun', $data);
+        return view('admin.kelola-akun', $data);
     }
 
     public function admin_tambah_akun(Request $request)

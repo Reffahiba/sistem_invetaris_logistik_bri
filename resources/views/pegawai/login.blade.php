@@ -2,8 +2,30 @@
 
 @section('content')
 <div class="min-h-screen flex">
-    <div class="w-1/2 bg-gradient-to-br from-primary to-[#036ED1] flex items-center justify-center">
-        <img src="{{ asset('assets/illustration.png') }}" alt="login-illustration" class="w-2/3">
+    <div x-data="{
+            current: 0,
+            images: [
+                '{{ asset('assets/ilustrasi1.png') }}',
+                '{{ asset('assets/ilustrasi2.png') }}',
+                '{{ asset('assets/ilustrasi3.png') }}'
+            ],
+            init() {
+                setInterval(() => {
+                    this.current = (this.current + 1) % this.images.length
+                }, 4000)
+            }
+        }"
+        class="relative w-1/2 bg-gradient-to-br from-primary to-[#036ED1] flex items-center justify-center overflow-hidden"
+    >
+        <template x-for="(image, index) in images" :key="index">
+            <img :src="image" alt="slide"
+                class="absolute transition-all duration-700 w-5/6"
+                :class="{
+                    'opacity-100 scale-100 z-10': current === index,
+                    'opacity-0 scale-95 z-0': current !== index
+                }"
+            >
+        </template>
     </div>
 
     <div class="w-1/2 flex flex-col justify-center px-16 bg-white">
@@ -14,6 +36,12 @@
                 </h1>
                 <p class="text-gray-500 mt-2">Login to access your account</p>
             </div>
+
+            @if(session('alert'))
+                <script>
+                    alert("{{ session('alert') }}");
+                </script>
+            @endif
 
             <form class="space-y-5" action="{{ route('proses_login') }}" method="POST">
                 @csrf

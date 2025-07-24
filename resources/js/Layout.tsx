@@ -78,14 +78,14 @@ const Layout = ({ children }) => {
                             <SidebarGroup>
                                 <div
                                     className={`flex items-center space-x-3 p-2 m-1 rounded-l-lg ${
-                                        currentPath === "/admin_dashboard"
+                                        currentPath === "/admin-dashboard"
                                             ? "bg-blue-100  text-blue-600 font-semibold"
                                             : "hover:bg-gray-200 transition-colors duration-300 ease-in-out"
                                     }`}
                                 >
                                     <img
                                         src={
-                                            currentPath === "/admin_dashboard"
+                                            currentPath === "/admin-dashboard"
                                                 ? "/assets/chart-2-blue.png"
                                                 : "/assets/chart-2.png"
                                         }
@@ -101,14 +101,14 @@ const Layout = ({ children }) => {
                                 </div>
                                 <div
                                     className={`flex items-center space-x-3 p-2 m-1 rounded-l-lg ${
-                                        currentPath === "/admin_data_barang"
+                                        currentPath === "/admin-data-barang"
                                             ? "bg-blue-100  text-blue-600 font-semibold"
                                             : "hover:bg-gray-200 transition-colors duration-300 ease-in-out"
                                     }`}
                                 >
                                     <img
                                         src={
-                                            currentPath === "/admin_data_barang"
+                                            currentPath === "/admin-data-barang"
                                                 ? "/assets/box-blue.png"
                                                 : "/assets/box.png"
                                         }
@@ -124,14 +124,14 @@ const Layout = ({ children }) => {
                                 </div>
                                 <div
                                     className={`flex items-center space-x-3 p-2 m-1 rounded-l-lg ${
-                                        currentPath === "/admin_permintaan"
+                                        currentPath === "/admin-permintaan"
                                             ? "bg-blue-100  text-blue-600 font-semibold"
                                             : "hover:bg-gray-200 transition-colors duration-300 ease-in-out"
                                     }`}
                                 >
                                     <img
                                         src={
-                                            currentPath === "/admin_permintaan"
+                                            currentPath === "/admin-permintaan"
                                                 ? "/assets/note-blue.png"
                                                 : "/assets/note.png"
                                         }
@@ -139,7 +139,7 @@ const Layout = ({ children }) => {
                                         className="w-5 h-5 ml-3"
                                     ></img>
                                     <a
-                                        href="/admin_permintaan"
+                                        href="/admin-permintaan"
                                         className="p-1 rounded text-sm pl-3"
                                     >
                                         Permintaan
@@ -154,7 +154,7 @@ const Layout = ({ children }) => {
                                 >
                                     <img
                                         src={
-                                            currentPath === "/admin_kelola_akun"
+                                            currentPath === "/admin-kelola-akun"
                                                 ? "/assets/people-blue.png"
                                                 : "/assets/people.png"
                                         }
@@ -162,7 +162,7 @@ const Layout = ({ children }) => {
                                         className="w-5 h-5 ml-3"
                                     ></img>
                                     <a
-                                        href="/admin_kelola_akun"
+                                        href="/admin-kelola-akun"
                                         className="p-1 rounded text-sm pl-3"
                                     >
                                         Kelola Akun
@@ -344,6 +344,6 @@ const Layout = ({ children }) => {
             </div>
         </div>
     );
-}
+};
 
 export default Layout;

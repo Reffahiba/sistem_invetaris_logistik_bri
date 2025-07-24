@@ -1,12 +1,13 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import Dashboard from "@/Dashboard";
-import DataBarang from "@/Data Barang";
+import DataBarang from "@/DataBarang";
 import Permintaan from "@/Permintaan";
-import KelolaAkun from "@/Kelola Akun";
-import DashboardPegawai from "@/Dashboard Pegawai";
-import AjukanPermintaan from "@/Ajukan Permintaan";
-import '/resources/css/app.css';
+import KelolaAkun from "@/KelolaAkun";
+import DashboardPegawai from "@/DashboardPegawai";
+import AjukanPermintaan from "@/AjukanPermintaan";
+import LacakPermintaan from "./LacakPermintaan";
+import "/resources/css/app.css";
 
 const dashboard = document.getElementById("dashboard-root");
 const dataBarang = document.getElementById("dataBarang-root");
@@ -15,8 +16,10 @@ const kelolaAkun = document.getElementById("kelolaAkun-root");
 
 const dashboardPegawai = document.getElementById("dashboardPegawai-root");
 const ajukanPermintaan = document.getElementById("ajukanPermintaan-root");
- 
-if(dashboard){
+const lacakPermintaan = document.getElementById("lacakStatus-root");
+const riwayatPermintaan = document.getElementById("riwayatPermintaan-root");
+
+if (dashboard) {
     ReactDOM.createRoot(dashboard).render(
         <React.StrictMode>
             <Dashboard />
@@ -24,7 +27,7 @@ if(dashboard){
     );
 }
 
-if(dataBarang){
+if (dataBarang) {
     ReactDOM.createRoot(dataBarang).render(
         <React.StrictMode>
             <DataBarang />
@@ -32,12 +35,12 @@ if(dataBarang){
     );
 }
 
-if(permintaan){
+if (permintaan) {
     ReactDOM.createRoot(permintaan).render(
         <React.StrictMode>
-            <Permintaan/>
+            <Permintaan />
         </React.StrictMode>
-    )
+    );
 }
 
 if (kelolaAkun) {
@@ -59,7 +62,15 @@ if (dashboardPegawai) {
 if (ajukanPermintaan) {
     ReactDOM.createRoot(ajukanPermintaan).render(
         <React.StrictMode>
-            <AjukanPermintaan/>
+            <AjukanPermintaan />
         </React.StrictMode>
-    )
+    );
+}
+
+if (lacakPermintaan) {
+    ReactDOM.createRoot(lacakPermintaan).render(
+        <React.StrictMode>
+            <LacakPermintaan />
+        </React.StrictMode>
+    );
 }
