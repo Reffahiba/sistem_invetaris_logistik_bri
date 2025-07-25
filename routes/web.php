@@ -48,7 +48,8 @@ Route::post('/admin-logout', [AdminLoginController::class, 'admin_logout'])->nam
 Route::middleware(['auth:pegawai'])->group(function () {
     Route::get('/dashboard', [PegawaiFiturController::class, 'dashboard'])->name('dashbord');
     Route::get('/ajukan-permintaan', [PegawaiFiturController::class, 'ajukan_permintaan'])->name('ajukan_permintaan');
-    Route::get('/lacak-permintaan', [PegawaiFiturController::class, 'lacak_permintaan'])->name('lacak_permintaan'); 
+    Route::get('/lacak-permintaan', [PegawaiFiturController::class, 'lacak_permintaan'])->name('lacak_permintaan');
+    Route::patch('/lacak-permintaan/{id}', [PegawaiFiturController::class, 'update_status_permintaan'])->name('update_status_permintaan');
 });
 
 // Login pegawai (tanpa middleware)

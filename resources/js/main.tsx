@@ -16,7 +16,7 @@ const kelolaAkun = document.getElementById("kelolaAkun-root");
 
 const dashboardPegawai = document.getElementById("dashboardPegawai-root");
 const ajukanPermintaan = document.getElementById("ajukanPermintaan-root");
-const lacakPermintaan = document.getElementById("lacakStatus-root");
+const lacakPermintaan = document.getElementById("lacakPermintaan-root");
 const riwayatPermintaan = document.getElementById("riwayatPermintaan-root");
 
 if (dashboard) {

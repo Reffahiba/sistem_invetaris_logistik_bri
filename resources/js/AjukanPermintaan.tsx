@@ -5,10 +5,10 @@ import { Button } from "@/components/ui/button";
 import axios from "axios";
 
 type Barang = {
-    id: number;
-    nama: string;
+    id_barang: number;
+    nama_barang: string;
     stok: number;
-    gambar?: string;
+    gambar_barang?: string;
 };
 
 function AjukanPermintaan() {
@@ -75,14 +75,14 @@ function AjukanPermintaan() {
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
                         {barangList.map((barang) => (
                             <Card
-                                key={barang.id}
+                                key={barang.id_barang}
                                 className="rounded-xl shadow-md p-2"
                             >
                                 <CardHeader className="flex items-center justify-center">
-                                    {barang.gambar ? (
+                                    {barang.gambar_barang ? (
                                         <img
-                                            src={barang.gambar}
-                                            alt={barang.nama}
+                                            src={barang.gambar_barang}
+                                            alt={barang.nama_barang}
                                             className="w-32 h-32 object-contain rounded-md"
                                         />
                                     ) : (
@@ -90,8 +90,8 @@ function AjukanPermintaan() {
                                     )}
                                 </CardHeader>
                                 <CardContent className="text-left space-y-2">
-                                    <CardTitle className="text-md font-semibold">
-                                        {barang.nama}
+                                    <CardTitle className="text-md font-semibold1">
+                                        {barang.nama_barang}
                                     </CardTitle>
                                     <div className="flex flex-row justify-between pb-3">
                                         <p>Stok: {barang.stok}</p>
@@ -100,19 +100,19 @@ function AjukanPermintaan() {
                                                 variant="outline"
                                                 size="sm"
                                                 onClick={() =>
-                                                    kurang(barang.id)
+                                                    kurang(barang.id_barang)
                                                 }
                                             >
                                                 −
                                             </Button>
                                             <span className="min-w-[20px] text-sm">
-                                                {jumlah[barang.id] || 0}
+                                                {jumlah[barang.id_barang] || 0}
                                             </span>
                                             <Button
                                                 variant="outline"
                                                 size="sm"
                                                 onClick={() =>
-                                                    tambah(barang.id)
+                                                    tambah(barang.id_barang)
                                                 }
                                             >
                                                 +

@@ -193,22 +193,28 @@ const LayoutPegawai = ({ children }) => {
                         </div>
                         <div className="space-y-3">
                             <a
-                                href="/admin-dashboard"
+                                href="/dashboard"
                                 className="block p-2 rounded hover:bg-gray-100"
                             >
                                 Dashboard
                             </a>
                             <a
-                                href="/admin-data-barang"
+                                href="/ajukan-permintaan"
                                 className="block p-2 rounded hover:bg-gray-100"
                             >
-                                Data Barang
+                                Ajukan Permintaan
                             </a>
                             <a
-                                href="/admin-permintaan"
+                                href="/lacak-permintaan"
                                 className="block p-2 rounded hover:bg-gray-100"
                             >
-                                Permintaan
+                                Lacak Permintaan
+                            </a>
+                            <a
+                                href="/riwayat-permintaan"
+                                className="block p-2 rounded hover:bg-gray-100"
+                            >
+                                Riwayat Permintaan
                             </a>
                             <a
                                 href="/pengaturan"
