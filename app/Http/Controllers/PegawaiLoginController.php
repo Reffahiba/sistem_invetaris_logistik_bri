@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Akun_Pengguna;
+use App\Models\AkunPengguna;
 use Illuminate\Support\Facades\Auth;
+
+use function Laravel\Prompts\alert;
 
 class PegawaiLoginController extends Controller
 {
@@ -22,12 +24,10 @@ class PegawaiLoginController extends Controller
             'password' => 'required|string',
         ]);
 
-        $user = Akun_Pengguna::where('email', $kredensial['email'])->first();
+        $user = AkunPengguna::where('email', $kredensial['email'])->first();
 
         if (!$user || !in_array($user->id_role, [2])) {
-            return back()->withErrors([
-                'nama_user' => 'Akses hanya diperbolehkan untuk pegawai BRI.',
-            ]);
+            return back()->with('alert', 'Akses hanya diperbolehkan untuk pegawai BRI.');
         }
 
         if(Auth::guard('pegawai')->attempt($kredensial)){
@@ -40,6 +40,7 @@ class PegawaiLoginController extends Controller
         return back()->withErrors([
             'nama_user' => 'Kredensial yang dimasukkan tidak sesuai.',
         ]);
+        
     }
 
     public function logout(Request $request){

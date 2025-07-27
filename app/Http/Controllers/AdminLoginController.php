@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Akun_Pengguna;
+use App\Models\AkunPengguna;
 use App\Models\Role;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -37,7 +37,7 @@ class AdminLoginController extends Controller
             'password' => 'required|string|confirmed|min:8',
         ]);
 
-        $user = Akun_Pengguna::create([
+        $user = AkunPengguna::create([
             'nama_user' => $request->input('nama_user'),
             'email' => $request->input('email'),
             'nomor_telepon' => $request->input('nomor_telepon'),
@@ -51,7 +51,7 @@ class AdminLoginController extends Controller
 
     public function admin_proses_login(Request $request){
         if(Auth::guard('admin')->check() && Auth::guard('admin')->user()->id_role == 1){
-            return redirect('admin_dashboard');
+            return redirect('admin/dashboard');
         }
 
         $kredensial = $request->validate([
@@ -61,17 +61,15 @@ class AdminLoginController extends Controller
 
         $remember = $request->has('remember');
 
-        $user = Akun_Pengguna::where('email', $kredensial['email'])->first();
+        $user = AkunPengguna::where('email', $kredensial['email'])->first();
 
         if (!$user || !in_array($user->id_role, [1])) {
-            return back()->withErrors([
-                'nama_user' => 'Akses hanya diperbolehkan untuk admin Logistik.',
-            ]);
+            return back()->with('alert', 'Akses hanya diperbolehkan untuk admin logistik BRI.');
         }
 
         if(Auth::guard('admin')->attempt($kredensial, $remember)){
             $request->session()->regenerate();
-            return redirect()->intended('admin_dashboard');
+            return redirect()->intended('admin-dashboard');
         }
 
         return back()->withErrors([

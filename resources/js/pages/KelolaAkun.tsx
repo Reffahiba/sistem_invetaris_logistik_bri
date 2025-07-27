@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import Layout from "./Layout";
+import Layout from "../LayoutAdmin";
 import axios from "axios";
 
 axios.defaults.headers.common["X-Requested-With"] = "XMLHttpRequest";
@@ -71,7 +71,7 @@ const KelolaAkun = () => {
         try {
             const response = await axios.get("/admin_kelola_akun");
             setAkunList(response.data);
-        } catch (error){
+        } catch (error) {
             console.error("Gagal memuat data akun:", error);
         }
     };
@@ -109,10 +109,8 @@ const KelolaAkun = () => {
             }
 
             if (editingId) {
-                await axios
-                    .put(`/admin_edit_akun/${editingId}`, payload);
-                    window.location.href = "/admin_kelola_akun";
-                    
+                await axios.put(`/admin_edit_akun/${editingId}`, payload);
+                window.location.href = "/admin_kelola_akun";
             } else {
                 await axios
                     .post("/admin_tambah_akun", payload)
@@ -123,7 +121,7 @@ const KelolaAkun = () => {
                     .catch((error) => {
                         console.error(error);
                         alert("Terjadi kesalahan saat menyimpan data.");
-                    });;
+                    });
             }
             closeModal();
         } catch (error) {

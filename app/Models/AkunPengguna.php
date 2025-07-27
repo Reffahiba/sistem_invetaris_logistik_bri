@@ -8,7 +8,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Notifications\RoutesNotifications;
 
-class Akun_Pengguna extends Authenticatable
+class AkunPengguna extends Authenticatable
 {
     use HasFactory;
     use Notifiable;

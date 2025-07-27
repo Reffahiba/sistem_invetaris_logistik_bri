@@ -70,7 +70,7 @@ return [
     'providers' => [
         'akun_pengguna' => [
             'driver' => 'eloquent',
-            'model' => App\Models\Akun_Pengguna::class,
+            'model' => App\Models\AkunPengguna::class,
         ],
 
         // 'users' => [

@@ -3,8 +3,9 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Akun_Pengguna;
+use App\Models\AkunPengguna;
 use App\Models\Divisi;
+use App\Models\Barang;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
@@ -16,7 +17,7 @@ class AdminFiturController extends Controller
         $this->divisi = new Divisi();
     }
 
-    public function admin_dashboard(){
+    public function dashboard(){
         $user = Auth::user();
         $nama = $user->nama_user;
         $divisi = $user->divisi->nama_divisi;
@@ -25,24 +26,11 @@ class AdminFiturController extends Controller
             'nama' => $nama,
             'divisi' => $divisi,
         ];
-        
+
         return view('admin.dashboard', $data);
     }
 
-    public function admin_data_barang(){
-        $user = Auth::user();
-        $nama = $user->nama_user;
-        $divisi = $user->divisi->nama_divisi;
-
-        $data = [
-            'nama' => $nama,
-            'divisi' => $divisi,
-        ];
-        
-        return view('admin.data_barang', $data);
-    }
-
-    public function admin_permintaan(){
+    public function kelolaPermintaan(){
         $user = Auth::user();
         $nama = $user->nama_user;
         $divisi = $user->divisi->nama_divisi;
@@ -55,8 +43,8 @@ class AdminFiturController extends Controller
         return view('admin.permintaan', $data);
     }
 
-    public function admin_kelola_akun(){
-        $akun = Akun_Pengguna::with('divisi')
+    public function kelolaAkun(){
+        $akun = AkunPengguna::with('divisi')
             ->where('id_divisi', '!=', 1)
             ->get();
         $user = Auth::user();
@@ -72,7 +60,7 @@ class AdminFiturController extends Controller
             'daftarDivisi' => $daftarDivisi,
         ];
         
-        return view('admin.kelola_akun', $data);
+        return view('admin.kelola-akun', $data);
     }
 
     public function admin_tambah_akun(Request $request)
@@ -90,7 +78,7 @@ class AdminFiturController extends Controller
             'id_divisi' => 'required|exists:divisi,id_divisi',
         ]);
 
-        $akun = Akun_Pengguna::create([
+        $akun = AkunPengguna::create([
             'nama_user' => $validated['nama_user'],
             'email' => $validated['email'],
             'nomor_telepon' => $validated['nomor_telepon'],
@@ -105,7 +93,7 @@ class AdminFiturController extends Controller
 
     public function admin_edit_akun(Request $request, $id)
     {
-        $akun = Akun_Pengguna::findOrFail($id);
+        $akun = AkunPengguna::findOrFail($id);
 
         $validated = $request->validate([
             'nama_user' => 'required|string|max:255',
@@ -119,7 +107,7 @@ class AdminFiturController extends Controller
 
     public function admin_hapus_akun($id)
     {
-        $akun = Akun_Pengguna::findOrFail($id);
+        $akun = AkunPengguna::findOrFail($id);
         $akun->delete();
 
         return response()->json(['message' => 'Akun berhasil dihapus']);

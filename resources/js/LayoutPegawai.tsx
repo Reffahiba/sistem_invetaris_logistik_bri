@@ -101,14 +101,14 @@ const LayoutPegawai = ({ children }) => {
                                 </div>
                                 <div
                                     className={`flex items-center space-x-3 p-2 m-1 rounded-l-lg ${
-                                        currentPath === "/ajukan_permintaan"
+                                        currentPath === "/ajukan-permintaan"
                                             ? "bg-blue-100  text-blue-600 font-semibold "
                                             : "hover:bg-gray-200 transition-colors duration-300 ease-in-out"
                                     }`}
                                 >
                                     <img
                                         src={
-                                            currentPath === "/ajukan_permintaan"
+                                            currentPath === "/ajukan-permintaan"
                                                 ? "/assets/box-blue.png"
                                                 : "/assets/box.png"
                                         }
@@ -116,7 +116,7 @@ const LayoutPegawai = ({ children }) => {
                                         className="w-5 h-5 ml-3"
                                     ></img>
                                     <a
-                                        href="/ajukan_permintaan"
+                                        href="/ajukan-permintaan"
                                         className="p-1 rounded text-sm pl-3"
                                     >
                                         Ajukan Permintaan
@@ -124,14 +124,14 @@ const LayoutPegawai = ({ children }) => {
                                 </div>
                                 <div
                                     className={`flex items-center space-x-3 p-2 m-1 rounded-l-lg ${
-                                        currentPath === "/lacak_permintaan"
+                                        currentPath === "/lacak-permintaan"
                                             ? "bg-blue-100  text-blue-600 font-semibold "
                                             : "hover:bg-gray-200 transition-colors duration-300 ease-in-out"
                                     }`}
                                 >
                                     <img
                                         src={
-                                            currentPath === "/lacak_permintaan"
+                                            currentPath === "/lacak-permintaan"
                                                 ? "/assets/search-status-blue.png"
                                                 : "/assets/search-status.png"
                                         }
@@ -139,7 +139,7 @@ const LayoutPegawai = ({ children }) => {
                                         className="w-5 h-5 ml-3"
                                     ></img>
                                     <a
-                                        href="/lacak_permintaan"
+                                        href="/lacak-permintaan"
                                         className="p-1 rounded text-sm pl-3"
                                     >
                                         Lacak Permintaan
@@ -147,7 +147,7 @@ const LayoutPegawai = ({ children }) => {
                                 </div>
                                 <div
                                     className={`flex items-center space-x-3 p-2 m-1 rounded-l-lg ${
-                                        currentPath === "/riwayat_permintaan"
+                                        currentPath === "/riwayat-permintaan"
                                             ? "bg-blue-100  text-blue-600 font-semibold "
                                             : "hover:bg-gray-200 transition-colors duration-300 ease-in-out"
                                     }`}
@@ -155,7 +155,7 @@ const LayoutPegawai = ({ children }) => {
                                     <img
                                         src={
                                             currentPath ===
-                                            "/riwayat_permintaan"
+                                            "/riwayat-permintaan"
                                                 ? "/assets/people-blue.png"
                                                 : "/assets/people.png"
                                         }
@@ -163,7 +163,7 @@ const LayoutPegawai = ({ children }) => {
                                         className="w-5 h-5 ml-3"
                                     ></img>
                                     <a
-                                        href="/admin_kelola_akun"
+                                        href="/riwayat-permintaan"
                                         className="p-1 rounded text-sm pl-3"
                                     >
                                         Riwayat Permintaan
@@ -193,19 +193,19 @@ const LayoutPegawai = ({ children }) => {
                         </div>
                         <div className="space-y-3">
                             <a
-                                href="/admin_dashboard"
+                                href="/admin-dashboard"
                                 className="block p-2 rounded hover:bg-gray-100"
                             >
                                 Dashboard
                             </a>
                             <a
-                                href="/admin_data_barang"
+                                href="/admin-data-barang"
                                 className="block p-2 rounded hover:bg-gray-100"
                             >
                                 Data Barang
                             </a>
                             <a
-                                href="/admin_permintaan"
+                                href="/admin-permintaan"
                                 className="block p-2 rounded hover:bg-gray-100"
                             >
                                 Permintaan

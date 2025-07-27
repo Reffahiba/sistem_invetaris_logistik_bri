@@ -4,7 +4,7 @@
     <div id="dashboard-root"></div>
     <div id="app" 
         data-nama="{{ $nama }}"
-        data-divisi="{{ $divisi}}">
+        data-divisi="{{ $divisi }}">
     </div>
 @endsection
 
