@@ -80,9 +80,9 @@ function DashboardPegawai() {
                 setCurrent((prev) => (prev + 1) % slides.length);
             } else {
                 api.scrollTo(0);
-                setCurrent(0); // Kembali ke slide pertama
+                setCurrent(0); 
             }
-        }, 6000); // 5 detik
+        }, 6000); 
 
         return () => clearInterval(interval);
     }, [api]);

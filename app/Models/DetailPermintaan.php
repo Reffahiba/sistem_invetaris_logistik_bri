@@ -10,7 +10,7 @@ class DetailPermintaan extends Model
     use HasFactory;
 
     protected $guarded = ['id_detail'];
-    protected $table = 'detailPermintaan';
+    protected $table = 'detail_permintaan';
     protected $fillable = ['jumlah_minta', 'id_permintaan', 'id_barang'];
 
     public function permintaan(){

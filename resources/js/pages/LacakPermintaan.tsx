@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import DaftarPermintaan from "./DaftarPermintaan";
 import DetailPermintaan from "./DetailPermintaan";
-import LayoutPegawai from "./LayoutPegawai";
+import LayoutPegawai from "../LayoutPegawai";
 import axios from "axios";
 
 const LacakPermintaan: React.FC = () => {

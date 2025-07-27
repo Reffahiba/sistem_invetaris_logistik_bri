@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Akun_Pengguna;
+use App\Models\AkunPengguna;
 use App\Models\Divisi;
 use App\Models\Barang;
 use App\Models\Permintaan;

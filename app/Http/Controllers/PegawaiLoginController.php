@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Akun_Pengguna;
+use App\Models\AkunPengguna;
 use Illuminate\Support\Facades\Auth;
 
 use function Laravel\Prompts\alert;
@@ -24,7 +24,7 @@ class PegawaiLoginController extends Controller
             'password' => 'required|string',
         ]);
 
-        $user = Akun_Pengguna::where('email', $kredensial['email'])->first();
+        $user = AkunPengguna::where('email', $kredensial['email'])->first();
 
         if (!$user || !in_array($user->id_role, [2])) {
             return back()->with('alert', 'Akses hanya diperbolehkan untuk pegawai BRI.');

@@ -10,7 +10,7 @@ class Permintaan extends Model
 {
     use HasFactory;
 
-    protected $guarded = ['id_permintaan'];
+    protected $primaryKey = 'id_permintaan';
     protected $table = 'permintaan';
     protected $fillable = ['tanggal_minta', 'status', 'id_user'];
 

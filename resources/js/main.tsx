@@ -1,16 +1,22 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import Dashboard from "@/Dashboard";
-import DataBarang from "@/DataBarang";
-import Permintaan from "@/Permintaan";
-import KelolaAkun from "@/KelolaAkun";
+import Dashboard from "@/DashboardAdmin";
+import DataBarang from "@/pages/DataBarang";
+import DataKategori from "@/pages/DataKategori";
+import BarangMasuk from "@/pages/BarangMasuk";
+import BarangKeluar from "@/pages/BarangKeluar";
+import Permintaan from "@/pages/Permintaan";
+import KelolaAkun from "@/pages/KelolaAkun";
 import DashboardPegawai from "@/DashboardPegawai";
-import AjukanPermintaan from "@/AjukanPermintaan";
-import LacakPermintaan from "./LacakPermintaan";
+import AjukanPermintaan from "@/pages/AjukanPermintaan";
+import LacakPermintaan from "./pages/LacakPermintaan";
 import "/resources/css/app.css";
 
 const dashboard = document.getElementById("dashboard-root");
 const dataBarang = document.getElementById("dataBarang-root");
+const dataKategori = document.getElementById("dataKategori-root");
+const barangMasuk = document.getElementById("barangMasuk-root");
+const barangKeluar = document.getElementById("barangKeluar-root");
 const permintaan = document.getElementById("permintaan-root");
 const kelolaAkun = document.getElementById("kelolaAkun-root");
 
@@ -34,6 +40,31 @@ if (dataBarang) {
         </React.StrictMode>
     );
 }
+
+if (dataKategori) {
+    ReactDOM.createRoot(dataKategori).render(
+        <React.StrictMode>
+            <DataKategori />
+        </React.StrictMode>
+    );
+}
+
+if (barangMasuk) {
+    ReactDOM.createRoot(barangMasuk).render(
+        <React.StrictMode>
+            <BarangMasuk />
+        </React.StrictMode>
+    );
+}
+
+if (barangKeluar) {
+    ReactDOM.createRoot(barangKeluar).render(
+        <React.StrictMode>
+            <BarangKeluar />
+        </React.StrictMode>
+    );
+}
+
 
 if (permintaan) {
     ReactDOM.createRoot(permintaan).render(

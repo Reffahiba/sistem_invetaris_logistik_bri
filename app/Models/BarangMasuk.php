@@ -9,9 +9,9 @@ class BarangMasuk extends Model
 {
     use HasFactory;
 
-    protected $guarded = ['id_transaksi'];
+    protected $primaryKey = 'id_transaksi';
     protected $table = 'barang_masuk';
-    protected $fillable = ['tanggal_masuk', 'jumlah_masuk', 'keterangan', 'id_barang'];
+    protected $fillable = ['kode_transaksi', 'tanggal_masuk', 'jumlah_masuk', 'deskripsi', 'id_barang'];
 
     public function barang(){
         return $this->belongsTo(Barang::class, 'id_barang');

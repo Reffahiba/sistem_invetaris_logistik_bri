@@ -3,6 +3,9 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AdminFiturController;
 use App\Http\Controllers\AdminLoginController;
+use App\Http\Controllers\BarangController;
+use App\Http\Controllers\KategoriController;
+use App\Http\Controllers\StokController;
 use App\Http\Controllers\PegawaiFiturController;
 use App\Http\Controllers\PegawaiLoginController;
 
@@ -27,10 +30,13 @@ Route::get('/test-env', function () {
 
 
 Route::middleware(['auth:admin'])->group(function () {
-    Route::get('/admin-dashboard', [AdminFiturController::class, 'admin_dashboard'])->name('admin_dashbord');
-    Route::get('/admin-data_barang', [AdminFiturController::class, 'admin_data_barang'])->name('admin_data_barang');
-    Route::get('/admin-permintaan', [AdminFiturController::class, 'admin_permintaan'])->name('admin_permintaan');
-    Route::get('/admin-kelola-akun', [AdminFiturController::class, 'admin_kelola_akun'])->name('admin_kelola_akun');
+    Route::get('/admin/dashboard', [AdminFiturController::class, 'dashboard'])->name('admin-dashboard');
+    Route::get('/admin/data-barang', [BarangController::class, 'kelolaBarang'])->name('admin-barang');
+    Route::get('/admin/data-kategori', [KategoriController::class, 'kelolaKategori'])->name('admin-kategori');
+    Route::get('/admin/barang-masuk', [StokController::class, 'kelolaBarangMasuk'])->name('admin-barang-masuk');
+    Route::get('/admin/barang-keluar', [StokController::class, 'kelolaBarangKeluar'])->name('admin-barang-keluar');
+    Route::get('/admin-permintaan', [AdminFiturController::class, 'kelolaPermintaan'])->name('admin-permintaan');
+    Route::get('/admin-kelola-akun', [AdminFiturController::class, 'kelolaAkun'])->name('admin-kelola-akun');
 
     Route::post('/admin-tambah-akun', [AdminFiturController::class, 'admin_tambah_akun'])->name('admin_tambah_akun');
     Route::put('/admin-edit-akun/{id}', [AdminFiturController::class, 'admin_edit_akun'])->name('admin_edit_akun');
@@ -42,7 +48,7 @@ Route::get('/admin', [AdminLoginController::class, 'admin_login'])->name('admin_
 Route::post('/admin-proses-login', [AdminLoginController::class, 'admin_proses_login'])->name('admin_proses_login');
 Route::get('/admin-register', [AdminLoginController::class, 'admin_register'])->name('admin_register');
 Route::post('/admin-register-proses', [AdminLoginController::class, 'admin_proses_register'])->name('admin_proses_register');
-Route::post('/admin-logout', [AdminLoginController::class, 'admin_logout'])->name('admin.logout');
+Route::post('/admin-logout', [AdminLoginController::class, 'admin_logout'])->name('admin-logout');
 
 // ---------------- Pegawai ----------------
 Route::middleware(['auth:pegawai'])->group(function () {
