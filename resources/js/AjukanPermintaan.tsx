@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { Search } from "lucide-react";
 import LayoutPegawai from "@/LayoutPegawai";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -11,9 +12,17 @@ type Barang = {
     gambar_barang?: string;
 };
 
+type Kategori = {
+    id_kategori: number;
+    nama_kategori: string;
+}
+
 function AjukanPermintaan() {
     const [barangList, setBarangList] = useState<Barang[]>([]);
+    const [kategoriList, setKategoriList] = useState<Kategori[]>([]);
+    const [selectedKategori, setSelectedKategori] = useState<string>("");
     const [jumlah, setJumlah] = useState<Record<number, number>>({});
+    const [searchTerm, setSearchTerm] = useState<string>("");
     const [loading, setLoading] = useState(true);
 
     const tambah = (id: number) => {
@@ -25,6 +34,23 @@ function AjukanPermintaan() {
             ...prev,
             [id]: Math.max((prev[id] || 0) - 1, 0),
         }));
+    };
+
+    const fetchBarang = async (kategori = "") => {
+        setLoading(true);
+        try{
+            const res = await axios.get('/ajukan-permintaan', {
+                params: {kategori},
+            });
+
+            const el = document.getElementById("app");
+            setBarangList(res.data.barang || []);
+            setKategoriList(res.data.kategoriList || []);
+        } catch (err) {
+            console.error("Gagal memuat barang:", err);
+        } finally {
+            setLoading(false);
+        }
     };
 
     useEffect(() => {
@@ -42,6 +68,8 @@ function AjukanPermintaan() {
             }
         }
 
+        fetchBarang();
+
         setLoading(false); // tetap set loading meskipun tanpa fetch
     }, []);
 
@@ -51,14 +79,73 @@ function AjukanPermintaan() {
     const nama = el?.dataset.nama || "Guest";
     const divisi = el?.dataset.divisi || "Divisi";
 
+    const handleAjukanPermintaan = async (id_barang: number) => {
+        const jumlah_minta = jumlah[id_barang] || 0;
+
+        if (jumlah_minta <= 0) {
+            alert("Silakan tambahkan jumlah terlebih dahulu.");
+            return;
+        }
+
+        try {
+            await axios.post("/simpan-permintaan", {
+                id_barang,
+                jumlah_minta,
+            });
+
+            alert("Permintaan berhasil diajukan.");
+            setJumlah((prev) => ({ ...prev, [id_barang]: 0 }));
+        } catch (error) {
+            console.error("Gagal mengirim permintaan:", error);
+            alert("Terjadi kesalahan saat mengirim permintaan.");
+        }
+    };
+
+    const filteredBarang = barangList.filter((barang) =>
+        barang.nama_barang.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
     return (
         <LayoutPegawai>
             <main className="flex-1 overflow-auto">
-                <h1 className="text-2xl font-bold mb-4">Daftar Barang</h1>
+                <div className="flex">
+                    <div className="mb-10">
+                        <label className="mr-2">Filter Kategori:</label>
+                        <select
+                            className="border rounded px-2 py-1 mr-10"
+                            value={selectedKategori}
+                            onChange={(e) => {
+                                const kategori = e.target.value;
+                                setSelectedKategori(kategori);
+                                fetchBarang(kategori); // ambil ulang barang berdasarkan kategori
+                            }}
+                        >
+                            <option value="">Semua Kategori</option>
+                            {kategoriList.map((kat, idx) => (
+                                <option key={idx} value={kat}>
+                                    {kat}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
 
+                    <div className="relative w-full md:w-48">
+                        <input
+                            type="text"
+                            placeholder="Search..."
+                            className="w-full rounded-full border px-3 py-2 pl-10 text-sm outline-none focus:outline-none focus:ring-1 focus:ring-gray-200"
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                        />
+                        <Search className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
+                    </div>
+                </div>
+
+                <h1 className="text-2xl font-bold mb-4">Daftar Barang</h1>
                 {loading ? (
                     <p>Memuat data barang...</p>
-                ) : barangList.length === 0 ? (
+                ) : filteredBarang.length === 0 ? (
                     <table className="min-w-full bg-white rounded-xl">
                         <tbody>
                             <tr>
@@ -73,7 +160,7 @@ function AjukanPermintaan() {
                     </table>
                 ) : (
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-                        {barangList.map((barang) => (
+                        {filteredBarang.map((barang) => (
                             <Card
                                 key={barang.id_barang}
                                 className="rounded-xl shadow-md p-2"
@@ -119,7 +206,14 @@ function AjukanPermintaan() {
                                             </Button>
                                         </div>
                                     </div>
-                                    <Button className="bg-gradient-to-r from-orange-600 via-orange-500 to-orange-600 text-white text-md w-full rounded-full mt-2">
+                                    <Button
+                                        className="bg-gradient-to-r from-orange-600 via-orange-500 to-orange-600 text-white text-md w-full rounded-full mt-2"
+                                        onClick={() =>
+                                            handleAjukanPermintaan(
+                                                barang.id_barang
+                                            )
+                                        }
+                                    >
                                         Ajukan Permintaan
                                     </Button>
                                 </CardContent>

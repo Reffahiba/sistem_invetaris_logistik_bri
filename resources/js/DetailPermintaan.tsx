@@ -2,20 +2,15 @@ import React, {useState} from "react";
 import Status from "@/Status";
 import axios from "axios";
 
-interface Barang {
-    id: number;
-    nama: string;
-    deskripsi: string;
-    gambar?: string;
-}
-
 interface DetailPermintaanProps {
     detail_permintaan: {
         id_detail: number;
         nama_barang: string;
         jumlah_minta: number;
         id_permintaan: number;
+        id_barang: number;
         status: string;
+        gambar_barang: string;
         daftarBarang: Barang[];
     };
 }
@@ -72,16 +67,13 @@ const DetailPermintaan: React.FC<DetailPermintaanProps> = ({detail_permintaan,})
                     >
                         <div className="w-16 h-16 bg-gray-100 rounded flex items-center justify-center">
                             <img
-                                src={barang.gambar || "/placeholder.png"}
+                                src={detail_permintaan.gambar_barang || "/placeholder.png"}
                                 alt="Gambar"
                                 className="w-12 h-12 object-cover"
                             />
                         </div>
                         <div>
-                            <p className="font-medium">{barang.nama}</p>
-                            <p className="text-sm text-gray-600">
-                                {barang.deskripsi}
-                            </p>
+                            <p className="font-medium">{detail_permintaan.nama_barang}</p>
                         </div>
                     </div>
                 ))}

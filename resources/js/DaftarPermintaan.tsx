@@ -15,11 +15,16 @@ const DaftarPermintaan: React.FC<Props> = ({
     daftarPermintaan = [], // fallback ke array kosong
     onLihatDetail,
 }) => {
+
+    const permintaan = daftarPermintaan.filter(
+        (item) => item.status !== "telah diterima"
+    );
+
     return (
         <div className="max-w-full p-2 mx-auto">
             <h2 className="text-xl font-bold mb-4">Daftar Permintaan</h2>
             <table className="w-full table-auto border border-blue-600">
-                {daftarPermintaan.length === 0 ? (
+                {permintaan.length === 0 ? (
                     <tbody>
                         <tr>
                             <td
@@ -57,7 +62,9 @@ const DaftarPermintaan: React.FC<Props> = ({
                                             ? "Menunggu"
                                             : item.status === "sedang diproses"
                                             ? "Sedang Diproses"
-                                            : "Sedang Diantar"}
+                                            : item.status === "sedang diantar"
+                                            ? "Sedang Diantar"
+                                            : "Telah Diterima"}
                                     </td>
                                     <td className="p-2 border">
                                         <button

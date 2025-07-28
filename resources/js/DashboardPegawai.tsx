@@ -184,21 +184,21 @@ function DashboardPegawai() {
                             bg: "bg-red-400",
                         },
                         {
-                            label: "Diproses",
+                            label: "Sedang Diproses",
                             key: "diproses",
                             color: "text-yellow-400",
                             image: "/assets/refresh-square-2.png",
                             bg: "bg-yellow-400",
                         },
                         {
-                            label: "Diantar",
+                            label: "Sedang Diantar",
                             key: "diantar",
                             color: "text-blue-400",
                             image: "/assets/send-sqaure-2.png",
                             bg: "bg-blue-400",
                         },
                         {
-                            label: "Diterima",
+                            label: "Telah Diterima",
                             key: "diterima",
                             color: "text-green-400",
                             image: "/assets/tick-square.png",
@@ -224,15 +224,13 @@ function DashboardPegawai() {
                                 </p>
                                 <div className="w-full bg-gray-200 h-2 mt-4 rounded-full overflow-hidden">
                                     <div
-                                        className="h-full bg-opacity-80 rounded-full transition-all"
+                                        className={`h-full rounded-full transition-all ${item.bg}`}
                                         style={{
                                             width: `${
                                                 persen[
                                                     item.key as keyof typeof persen
                                                 ]
                                             }%`,
-                                            backgroundColor: "currentColor",
-                                            color: "inherit",
                                         }}
                                     />
                                 </div>

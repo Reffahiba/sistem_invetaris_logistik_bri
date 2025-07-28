@@ -2,11 +2,13 @@
 
 @section('content')
     <div id="riwayatPermintaan-root"
-        data-daftarBarang='@json($barang)'>
+        data-permintaan='@json($permintaan)'>
     </div>
     <div id="app" 
         data-nama="{{ $nama }}"
-        data-divisi="{{ $divisi }}">
+        data-divisi="{{ $divisi }}"
+        data-permintaan='@json($permintaan)'
+        data-detailPermintaan='@json($detail_permintaan)'>
     </div>
 @endsection
 

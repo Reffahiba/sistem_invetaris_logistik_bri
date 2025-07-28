@@ -39,7 +39,7 @@ class AdminFiturController extends Controller
             'divisi' => $divisi,
         ];
         
-        return view('admin.data_barang', $data);
+        return view('admin.data-barang', $data);
     }
 
     public function admin_permintaan(){

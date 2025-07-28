@@ -12,6 +12,7 @@ class Permintaan extends Model
 
     protected $guarded = ['id_permintaan'];
     protected $table = 'permintaan';
+    protected $primaryKey = 'id_permintaan';
     protected $fillable = ['tanggal_minta', 'status', 'id_user'];
 
     public function user(){

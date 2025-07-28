@@ -109,14 +109,14 @@ const KelolaAkun = () => {
             }
 
             if (editingId) {
-                await axios.put(`/admin_edit_akun/${editingId}`, payload);
+                await axios.put(`/admin-edit-akun/${editingId}`, payload);
                 window.location.href = "/admin_kelola_akun";
             } else {
                 await axios
-                    .post("/admin_tambah_akun", payload)
+                    .post("/admin-tambah-akun", payload)
                     .then((response) => {
                         alert(response.data.message);
-                        window.location.href = "/admin_kelola_akun";
+                        window.location.href = "/admin-kelola-akun";
                     })
                     .catch((error) => {
                         console.error(error);

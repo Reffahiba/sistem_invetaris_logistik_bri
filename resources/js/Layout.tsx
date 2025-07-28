@@ -93,7 +93,7 @@ const Layout = ({ children }) => {
                                         className="w-5 h-5 ml-3"
                                     ></img>
                                     <a
-                                        href="/admin_dashboard"
+                                        href="/admin-dashboard"
                                         className="p-1 rounded text-sm pl-3"
                                     >
                                         Dashboard
@@ -116,7 +116,7 @@ const Layout = ({ children }) => {
                                         className="w-5 h-5 ml-3"
                                     ></img>
                                     <a
-                                        href="/admin_data_barang"
+                                        href="/admin-data-barang"
                                         className="p-1 rounded text-sm pl-3"
                                     >
                                         Data Barang
@@ -314,7 +314,7 @@ const Layout = ({ children }) => {
                                     <a href="/profile">Lihat Profil</a>
                                 </DropdownMenuItem>
                                 <DropdownMenuItem>
-                                    <form method="POST" action="/admin_logout">
+                                    <form method="POST" action="/admin-logout">
                                         <input
                                             type="hidden"
                                             name="_token"

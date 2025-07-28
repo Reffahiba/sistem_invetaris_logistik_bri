@@ -3,8 +3,11 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AdminFiturController;
 use App\Http\Controllers\AdminLoginController;
-use App\Http\Controllers\PegawaiFiturController;
 use App\Http\Controllers\PegawaiLoginController;
+use App\Http\Controllers\AjukanPermintaanController;
+use App\Http\Controllers\DashboardPegawaiController;
+use App\Http\Controllers\LacakPermintaanController;
+use App\Http\Controllers\RiwayatPermintaanController;
 
 /*
 |--------------------------------------------------------------------------
@@ -42,14 +45,16 @@ Route::get('/admin', [AdminLoginController::class, 'admin_login'])->name('admin_
 Route::post('/admin-proses-login', [AdminLoginController::class, 'admin_proses_login'])->name('admin_proses_login');
 Route::get('/admin-register', [AdminLoginController::class, 'admin_register'])->name('admin_register');
 Route::post('/admin-register-proses', [AdminLoginController::class, 'admin_proses_register'])->name('admin_proses_register');
-Route::post('/admin-logout', [AdminLoginController::class, 'admin_logout'])->name('admin.logout');
+Route::post('/admin-logout', [AdminLoginController::class, 'admin_logout'])->name('admin_logout');
 
 // ---------------- Pegawai ----------------
 Route::middleware(['auth:pegawai'])->group(function () {
-    Route::get('/dashboard', [PegawaiFiturController::class, 'dashboard'])->name('dashbord');
-    Route::get('/ajukan-permintaan', [PegawaiFiturController::class, 'ajukan_permintaan'])->name('ajukan_permintaan');
-    Route::get('/lacak-permintaan', [PegawaiFiturController::class, 'lacak_permintaan'])->name('lacak_permintaan');
-    Route::patch('/lacak-permintaan/{id}', [PegawaiFiturController::class, 'update_status_permintaan'])->name('update_status_permintaan');
+    Route::get('/dashboard', [DashboardPegawaiController::class, 'dashboard'])->name('dashbord');
+    Route::get('/ajukan-permintaan', [AjukanPermintaanController::class, 'ajukan_permintaan'])->name('ajukan_permintaan');
+    Route::post('/simpan-permintaan', [AjukanPermintaanController::class, 'simpan_permintaan'])->name("simpan_permintaan");
+    Route::get('/lacak-permintaan', [LacakPermintaanController::class, 'lacak_permintaan'])->name('lacak_permintaan');
+    Route::patch('/lacak-permintaan/{id}', [LacakPermintaanController::class, 'update_status_permintaan'])->name('update_status_permintaan');
+    Route::get('/riwayat-permintaan', [RiwayatPermintaanController::class, 'riwayat_permintaan'])->name('riwayat_permintaan');
 });
 
 // Login pegawai (tanpa middleware)

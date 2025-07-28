@@ -51,7 +51,7 @@ class AdminLoginController extends Controller
 
     public function admin_proses_login(Request $request){
         if(Auth::guard('admin')->check() && Auth::guard('admin')->user()->id_role == 1){
-            return redirect('admin_dashboard');
+            return redirect('admin-dashboard');
         }
 
         $kredensial = $request->validate([
