@@ -33,7 +33,7 @@ type EditBarangData = {
 interface EditBarangModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSuccess: () => void;
+  onSuccess: (message: string) => void; //
   itemToEdit: Barang | null; // <-- Prop baru untuk menerima data barang
 }
 
@@ -157,9 +157,8 @@ const EditBarangModal: React.FC<EditBarangModalProps> = ({
           }
         }
       });
-      alert("Barang berhasil diperbarui!");
-      onSuccess();
       onClose();
+      onSuccess("Barang berhasil diperbarui!");
     } catch (error) {
         console.error("Gagal memperbarui barang:", error);
         alert("Gagal memperbarui barang. Periksa konsol untuk detail.");
@@ -181,7 +180,7 @@ const EditBarangModal: React.FC<EditBarangModalProps> = ({
       <div ref={modalRef} className="bg-white p-6 rounded-lg shadow-xl w-11/12 max-w-[500px] flex flex-col max-h-[90vh]">
         {/* Header Modal */}
         <div className="flex justify-between items-center pb-4 border-b border-gray-200 mb-4">
-          <h2 className="text-2xl font-semibold text-gray-800">Edit Barang</h2> {/* <-- Teks diubah */}
+          <h2 className="text-lg font-semibold text-gray-800">Edit Barang</h2> {/* <-- Teks diubah */}
           <button onClick={onClose} className="text-gray-500 hover:text-gray-700 p-1 rounded-full hover:bg-gray-100">
             <X className="h-6 w-6" />
           </button>

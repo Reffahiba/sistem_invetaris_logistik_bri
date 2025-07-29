@@ -6,6 +6,8 @@ import AddBarangModal from "@/components/modal/AddBarangModal"
 import ImageDetailModal from "@/components/modal/ImageDetailModal";
 import DeleteBarangModal from "@/components/modal/DeleteBarangModal";
 import EditBarangModal from '@/components/modal/EditBarangModal';
+import SuccessModal from "@/components/modal/SuccessModal";
+import FailModal from "@/components/modal/FailModal";
 import Breadcrumb from "@/components/ui/breadcrumb";
 
 // Definisi tipe data untuk tabel barang (sesuain yagesya sama database)
@@ -21,6 +23,10 @@ type Barang = {
   satuan: string;
 };
 
+const breadcrumbPaths = [
+  { label: "Manajemen Barang", href: "/admin/data-barang" }, 
+  { label: "Kelola Barang" },          
+];
 
 const SortArrow = ({ order }: { order: 'asc' | 'desc' }) => (
   <div className="inline-flex flex-col items-center justify-center ml-1">
@@ -63,17 +69,13 @@ function DataBarang() {
   const [itemToDelete, setItemToDelete] = useState<Barang | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [itemToEdit, setItemToEdit] = useState<Barang | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [failMessage, setFailMessage] = useState<string | null>(null);
 
   // === STATE FOR IMAGE HOVER EFFECT ===
   const [hoveredImageId, setHoveredImageId] = useState<number | null>(null);
 
-  // === BREADCRUMB ===
-  const breadcrumbPaths = [
-    { label: "Data Barang" }, // Anda bisa ganti '#' dengan link jika ada halaman induk
-    { label: "Kelola Barang" }, // Item terakhir tidak perlu href
-  ];
-
-
+  // Fetch Data Function
   const fetchData = async () => {
     setIsLoading(true);
     try {
@@ -144,6 +146,7 @@ function DataBarang() {
     setCurrentPage(1);
   };
 
+  // NGETEST EXPORT(belum fullly functional)
   const handleExportPDF = () => {
     alert("Export sebagai PDF diklik!");
     setShowExportMenu(false);
@@ -154,10 +157,7 @@ function DataBarang() {
     setShowExportMenu(false);
   };
 
-  const handleEdit = (id_barang: number) => {
-    alert(`Edit barang dengan ID: ${id_barang}`);
-  };
-
+  // Modal Handlers
   const handleOpenEditModal = (barang: Barang) => {
     setItemToEdit(barang);
     setIsEditModalOpen(true);
@@ -177,7 +177,6 @@ function DataBarang() {
     setIsDeleteModalOpen(false);
     setItemToDelete(null);
   };
-  // NGETEST EXPORT(belum fullly functional)
 
   const openImageModal = (imageUrl: string, imageAlt: string) => {
     setCurrentImageModalUrl(imageUrl);
@@ -191,12 +190,22 @@ function DataBarang() {
     setCurrentImageModalAlt('');
   };
   
-
   const handleKategoriSelect = (kategori: string | null) => {
     setSelectedKategori(kategori);
     setShowKategoriDropdown(false);
     setCurrentPage(1);
   };
+
+  const handleSuccess = (message: string) => {
+    fetchData(); // Muat ulang data tabel
+    setSuccessMessage(message); // Tampilkan modal sukses dengan pesan
+  };
+
+  const handleFail = (message: string) => {
+    fetchData(); // Muat ulang data tabel
+    setFailMessage(message); // Tampilkan modal fail dengan pesan
+  };
+
 
   // Jumlah angka halaman yang akan ditampilkan
   const getPageNumbers = () => {
@@ -228,7 +237,12 @@ function DataBarang() {
   return (
     <Layout>
       <main className="min-h-screen">
-        <h1 className="text-2xl font-semibold text-gray-800 mb-6">Kelola Barang</h1>
+
+        {/* Title & Breadcrumbs */}
+        <div className="flex justify-between items-center mb-6">
+          <h1 className="text-2xl font-semibold text-gray-800">Kelola Barang</h1>
+          <Breadcrumb paths={breadcrumbPaths} />
+        </div>
 
         <div className="flex flex-col md:flex-row justify-between items-center mb-6">
           {/* Left Group: Filter Kategori */}
@@ -334,7 +348,8 @@ function DataBarang() {
             </div>
           </div>
         </div>
-
+        
+        {/* Search Bar dan Entry */}
         <div className="bg-white p-6 rounded-lg shadow-md">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pb-6 border-b border-gray-200 mb-6">
             <input
@@ -369,6 +384,7 @@ function DataBarang() {
               </div>
             </div>
           </div>
+          {/* Search Bar dan Entry */}
 
           {/* Tabel Data Barang */}
           <div className="overflow-x-auto"> 
@@ -562,16 +578,14 @@ function DataBarang() {
       <AddBarangModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        onSuccess={fetchData}
+        onSuccess={(msg) => handleSuccess(msg)}
+        onFail={(msg) => handleFail(msg)}
       />
 
       <EditBarangModal
         isOpen={isEditModalOpen}
         onClose={handleCloseEditModal}
-        onSuccess={() => {
-          handleCloseEditModal();
-          fetchData(); 
-        }}
+        onSuccess={(msg) => handleSuccess(msg)}
         itemToEdit={itemToEdit}
       />
 
@@ -586,7 +600,20 @@ function DataBarang() {
         isOpen={isDeleteModalOpen}
         onClose={handleCloseDeleteModal}
         item={itemToDelete}
-        onDeleteSuccess={fetchData} 
+        onDeleteSuccess={(msg) => handleSuccess(msg)}
+      />
+      
+      {/* Modal Sukses dan Gagal */}
+      <SuccessModal 
+        isOpen={!!successMessage}
+        onClose={() => setSuccessMessage(null)}
+        message={successMessage || ''}
+      />
+
+      <FailModal 
+        isOpen={!!failMessage}
+        onClose={() => setFailMessage(null)}
+        message={failMessage || ''}
       />
     </Layout>
   );

@@ -5,6 +5,9 @@ import { Pencil, Trash2, ChevronDown, ChevronUp } from 'lucide-react';
 import AddKategoriModal from "@/components/modal/AddKategoriModal";
 import EditKategoriModal from "@/components/modal/EditKategoriModal";
 import DeleteKategoriModal from "@/components/modal/DeleteKategoriModal";
+import SuccessModal from "@/components/modal/SuccessModal";
+import FailModal from "@/components/modal/FailModal";
+import Breadcrumb from "@/components/ui/breadcrumb";
 
 // Tipe data Kategori
 type Kategori = {
@@ -12,6 +15,11 @@ type Kategori = {
   nama_kategori: string;
   deskripsi: string;
 };
+
+const breadcrumbPaths = [
+  { label: "Manajemen Barang", href: "/admin/data-barang" }, 
+  { label: "Kelola Kategori" },          
+];
 
 // Komponen SortArrow 
 const SortArrow = ({ order }: { order: 'asc' | 'desc' }) => (
@@ -37,6 +45,8 @@ function DataKategori() {
   const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
   const [itemToEdit, setItemToEdit] = useState<Kategori | null>(null);
   const [itemToDelete, setItemToDelete] = useState<Kategori | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [failMessage, setFailMessage] = useState<string | null>(null);
 
   const fetchData = async () => {
     setIsLoading(true);
@@ -78,9 +88,19 @@ function DataKategori() {
     setItemToEdit(kategori);
     setEditModalOpen(true);
   };
+
   const handleOpenDeleteModal = (kategori: Kategori) => {
     setItemToDelete(kategori);
     setDeleteModalOpen(true);
+  };
+
+  const handleSuccess = (message: string) => {
+    fetchData(); // Muat ulang data tabel
+    setSuccessMessage(message); // Tampilkan modal sukses dengan pesan
+  };
+
+  const handleFail = (message: string) => {
+    setFailMessage(message); // Tampilkan modal fail dengan pesan
   };
 
   const getPageNumbers = () => {
@@ -112,8 +132,12 @@ function DataKategori() {
   return (
     <Layout>
       <main className="min-h-screen">
-          <h1 className="text-2xl font-semibold text-gray-800 mb-6">Kelola Kategori</h1>
-        
+        {/* Title & Breadcrumbs */}
+        <div className="flex justify-between items-center mb-6">
+          <h1 className="text-2xl font-semibold text-gray-800">Kelola Kategori</h1>
+          <Breadcrumb paths={breadcrumbPaths} />
+        </div>
+
         <div className="flex justify-end mb-6">
         <button
               onClick={() => setAddModalOpen(true)}
@@ -258,9 +282,19 @@ function DataKategori() {
       </main>
 
       {/* Modals */}
-      <AddKategoriModal isOpen={isAddModalOpen} onClose={() => setAddModalOpen(false)} onSuccess={fetchData} />
-      <EditKategoriModal isOpen={isEditModalOpen} onClose={() => setEditModalOpen(false)} onSuccess={fetchData} itemToEdit={itemToEdit} />
-      <DeleteKategoriModal isOpen={isDeleteModalOpen} onClose={() => setDeleteModalOpen(false)} onSuccess={fetchData} itemToDelete={itemToDelete} />
+      <AddKategoriModal isOpen={isAddModalOpen} onClose={() => setAddModalOpen(false)} onSuccess={(msg) => handleSuccess(msg)} onFail={(msg) => handleFail(msg)} />
+      <EditKategoriModal isOpen={isEditModalOpen} onClose={() => setEditModalOpen(false)} onSuccess={(msg) => handleSuccess(msg)} itemToEdit={itemToEdit} />
+      <DeleteKategoriModal isOpen={isDeleteModalOpen} onClose={() => setDeleteModalOpen(false)} onSuccess={(msg) => handleSuccess(msg)} itemToDelete={itemToDelete} />
+      <SuccessModal 
+        isOpen={!!successMessage}
+        onClose={() => setSuccessMessage(null)}
+        message={successMessage || ''}
+      />
+      <FailModal 
+        isOpen={!!failMessage}
+        onClose={() => setFailMessage(null)}
+        message={failMessage || ''}
+      />
     </Layout>
   );
 }

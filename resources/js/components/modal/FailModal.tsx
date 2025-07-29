@@ -2,24 +2,24 @@ import React, { useEffect, useState } from 'react';
 import Lottie from 'lottie-react';
 
 // Path ke file Lottie di folder public
-const LOTTIE_JSON_PATH = '/assets/success.json'; 
+const LOTTIE_JSON_PATH = '/assets/failed.json'; 
 
-interface SuccessModalProps {
+interface FailModalProps {
   isOpen: boolean;
   onClose: () => void;
   title?: string;
   message: string;
 }
 
-const SuccessModal: React.FC<SuccessModalProps> = ({ 
+const FailModal: React.FC<FailModalProps> = ({ 
   isOpen, 
   onClose, 
-  title = "Sukses!", 
+  title = "Error!", 
   message 
 }) => {
   const [animationData, setAnimationData] = useState<object | null>(null);
 
-  // Fetch data animasi saat modal akan dibuka
+  // Ambil data animasi dari folder public saat modal akan dibuka
   useEffect(() => {
     if (isOpen && !animationData) {
       fetch(LOTTIE_JSON_PATH)
@@ -44,7 +44,7 @@ const SuccessModal: React.FC<SuccessModalProps> = ({
         onClick={(e) => e.stopPropagation()}
       >
         {/* Animasi Lottie */}
-        <div className="mx-auto w-40 h-40">
+        <div className="mx-auto w-32 h-32">
             {animationData && (
                 <Lottie 
                     animationData={animationData} 
@@ -54,19 +54,19 @@ const SuccessModal: React.FC<SuccessModalProps> = ({
         </div>
 
         {/* Konten Teks */}
-        <h2 className="text-2xl font-bold text-gray-800 mt-4">{title}</h2>
+        <h2 className="text-2xl font-bold text-red-400 mt-4">{title}</h2>
         <p className="text-gray-600 mt-2">{message}</p>
 
         {/* Tombol Aksi */}
         <button
           onClick={onClose}
-          className="mt-6 w-full px-4 py-2 bg-primary text-white font-semibold rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition"
+          className="mt-6 w-full px-4 py-2 bg-red-400 text-white font-semibold rounded-lg hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition"
         >
-          Tutup
+          Coba Lagi
         </button>
       </div>
     </div>
   );
 };
 
-export default SuccessModal;
+export default FailModal;

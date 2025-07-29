@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\AkunPengguna;
 use App\Models\Role;
+use App\Models\LogActivity;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
@@ -69,7 +70,12 @@ class AdminLoginController extends Controller
 
         if(Auth::guard('admin')->attempt($kredensial, $remember)){
             $request->session()->regenerate();
-            return redirect()->intended('admin-dashboard');
+            LogActivity::create([
+                'id_user' => Auth::guard('admin')->id(),
+                'activity' => 'login',
+                'description' => 'ke sistem',
+            ]);
+            return redirect()->intended('admin/dashboard');
         }
 
         return back()->withErrors([
@@ -79,6 +85,11 @@ class AdminLoginController extends Controller
 
     public function admin_logout(Request $request){
         Auth::logout();
+        LogActivity::create([
+            'id_user' => Auth::guard('admin')->id(),
+            'activity' => 'logout',
+            'description' => 'dari sistem',
+        ]);
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 

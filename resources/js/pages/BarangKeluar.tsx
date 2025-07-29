@@ -4,6 +4,7 @@ import axios from "axios";
 import { ChevronDown, ChevronUp, Calendar, X } from 'lucide-react';
 import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
+import Breadcrumb from "@/components/ui/breadcrumb";
 
 
 // Tipe data baru untuk transaksi keluar
@@ -21,6 +22,11 @@ type TransaksiKeluar = {
     nama_barang: string;
   };
 };
+
+const breadcrumbPaths = [
+  { label: "Manajemen Stok", href: "/admin/barang-masuk" }, 
+  { label: "Barang Keluar" },          
+];
 
 // SortArrow Component (tidak berubah)
 const SortArrow = ({ order }: { order: 'asc' | 'desc' }) => (
@@ -86,7 +92,11 @@ function BarangKeluar() {
   return (
     <Layout>
       <main className="min-h-screen">
-        <h1 className="text-2xl font-semibold text-gray-800 mb-6">Barang Keluar</h1>
+        {/* Title & Breadcrumbs */}
+        <div className="flex justify-between items-center mb-6">
+          <h1 className="text-2xl font-semibold text-gray-800">Barang Keluar</h1>
+          <Breadcrumb paths={breadcrumbPaths} />
+        </div>
 
         <div className="flex flex-col md:flex-row justify-between items-center mb-6">
             {/* 5. Kembalikan komponen DatePicker ganda */}
@@ -152,7 +162,7 @@ function BarangKeluar() {
               </thead>
               <tbody className="bg-white divide-y">
                  {isLoading ? (
-                  <tr><td colSpan={6} className="text-center py-4">Memuat data...</td></tr>
+                  <tr><td colSpan={6} className="text-center py-4  text-gray-500">Memuat data...</td></tr>
                 ) : data.length === 0 ? (
                   <tr><td colSpan={6} className="text-center py-4 italic text-gray-500">Tidak ada transaksi ditemukan.</td></tr>
                 ) : (

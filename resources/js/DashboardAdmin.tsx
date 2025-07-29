@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Layout from "@/LayoutAdmin";
 import axios from "axios";
-import { Package, ArrowUpCircle, ArrowDownCircle, Clock } from 'lucide-react';
+import { Package, ArrowUpCircle, ArrowDownCircle, Clock, MoreHorizontal } from 'lucide-react';
 import { 
     ResponsiveContainer, 
     AreaChart, 
@@ -15,6 +15,17 @@ import {
     Pie,
     Cell,
 } from 'recharts';
+import LoadingOverlay from "@/components/ui/loading-overlay";
+
+interface LogActivity {
+    id: number;
+    activity: string;
+    description: string;
+    created_at: string;
+    akun_pengguna: {
+        nama_user: string;
+    } | null;
+}
 
 // Tipe data untuk data yang diterima dari API
 interface DashboardData {
@@ -26,6 +37,7 @@ interface DashboardData {
     };
     kategoriComposition: { name: string; value: number }[];
     lineChartData: { tanggal: string; masuk: number; keluar: number }[];
+    logActivities: LogActivity[];
 }
 
 // Komponen Card untuk ringkasan data
@@ -42,10 +54,33 @@ const SummaryCard = ({ icon, title, value, description }: { icon: React.ReactNod
     </div>
 );
 
+const formatRelativeTime = (dateString: string) => {
+    const date = new Date(dateString);
+    const now = new Date();
+    const seconds = Math.floor((now.getTime() - date.getTime()) / 1000);
+
+    let interval = seconds / 31536000;
+    if (interval > 1) return Math.floor(interval) + " tahun lalu";
+    interval = seconds / 2592000;
+    if (interval > 1) return Math.floor(interval) + " bulan lalu";
+    interval = seconds / 86400;
+    if (interval > 1) return Math.floor(interval) + " hari lalu";
+    interval = seconds / 3600;
+    if (interval > 1) return Math.floor(interval) + " jam lalu";
+    interval = seconds / 60;
+    if (interval > 1) return Math.floor(interval) + " menit lalu";
+    return "Baru saja";
+};
+
+// Tipe untuk filter
+type ChartFilter = 'minggu' | 'bulan' | 'tahun';
+
 function DashboardAdmin() {
     const [nama, setNama] = useState("Guest");
     const [dashboardData, setDashboardData] = useState<DashboardData | null>(null);
     const [isLoading, setIsLoading] = useState(true);
+
+    const [chartFilter, setChartFilter] = useState<ChartFilter>('minggu');
 
     useEffect(() => {
         const el = document.getElementById("app");
@@ -53,23 +88,28 @@ function DashboardAdmin() {
             setNama(el.dataset.nama || "Guest");
         }
 
-        // Fetch data dari controller
-        axios.get('/api/admin/dashboard-data')
-            .then(response => {
-                setDashboardData(response.data);
-            })
-            .catch(error => {
-                console.error("Gagal mengambil data dashboard:", error);
-            })
-            .finally(() => {
-                setIsLoading(false);
-            });
-    }, []);
+        setIsLoading(true); // Set loading true setiap kali filter berubah
+        axios.get('/api/admin/dashboard-data', {
+            params: {
+                filter: chartFilter // Kirim filter ke backend
+            }
+        })
+        .then(response => {
+            setDashboardData(response.data);
+        })
+        .catch(error => {
+            console.error("Gagal mengambil data dashboard:", error);
+        })
+        .finally(() => {
+            setIsLoading(false);
+        });
+    }, [chartFilter]);
 
     const PIE_COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#A239EA', '#FF5A5F'];
 
     if (isLoading) {
-        return <Layout><div className="p-6">Memuat data dashboard...</div></Layout>;
+        return <Layout><LoadingOverlay isLoading={isLoading} /></Layout>;
+        
     }
 
     if (!dashboardData) {
@@ -94,13 +134,13 @@ function DashboardAdmin() {
                         description="Jumlah jenis barang terdaftar"
                     />
                     <SummaryCard 
-                        icon={<ArrowUpCircle size={22} className="text-green-500"/>}
+                        icon={<ArrowDownCircle size={22} className="text-green-500"/>}
                         title="Total Barang Masuk"
                         value={dashboardData.summary.totalBarangMasuk.toLocaleString('id-ID')}
                         description="Akumulasi stok masuk"
                     />
                     <SummaryCard 
-                        icon={<ArrowDownCircle size={22} className="text-red-500"/>}
+                        icon={<ArrowUpCircle size={22} className="text-red-500"/>}
                         title="Total Barang Keluar"
                         value={dashboardData.summary.totalBarangKeluar.toLocaleString('id-ID')}
                         description="Akumulasi stok keluar"
@@ -117,7 +157,29 @@ function DashboardAdmin() {
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     {/* Line Chart */}
                     <div className="lg:col-span-2 bg-white p-6 rounded-lg shadow-sm">
-                        <h3 className="font-semibold text-gray-800 mb-4">Aktivitas Stok (7 Hari Terakhir)</h3>
+                        <div className="flex justify-between items-center mb-4">
+                            <h3 className="font-semibold text-gray-800">Aktivitas Stok</h3>
+                            <div className="flex items-center bg-gray-100 p-1 rounded-lg text-sm">
+                                <button 
+                                    onClick={() => setChartFilter('minggu')}
+                                    className={`px-3 py-1 rounded-md transition-colors ${chartFilter === 'minggu' ? 'bg-white shadow-sm text-gray-800 font-semibold' : 'text-gray-500 hover:bg-gray-200'}`}
+                                >
+                                    Mingguan
+                                </button>
+                                <button 
+                                    onClick={() => setChartFilter('bulan')}
+                                    className={`px-3 py-1 rounded-md transition-colors ${chartFilter === 'bulan' ? 'bg-white shadow-sm text-gray-800 font-semibold' : 'text-gray-500 hover:bg-gray-200'}`}
+                                >
+                                    Bulanan
+                                </button>
+                                <button 
+                                    onClick={() => setChartFilter('tahun')}
+                                    className={`px-3 py-1 rounded-md transition-colors ${chartFilter === 'tahun' ? 'bg-white shadow-sm text-gray-800 font-semibold' : 'text-gray-500 hover:bg-gray-200'}`}
+                                >
+                                    Tahunan
+                                </button>
+                            </div>
+                        </div>
                         <ResponsiveContainer width="100%" height={300}>
                             <AreaChart data={dashboardData.lineChartData} margin={{ top: 5, right: 20, left: -10, bottom: 5 }}>
                                 <defs>
@@ -167,6 +229,47 @@ function DashboardAdmin() {
                         </ResponsiveContainer>
                     </div>
                 </div>
+
+                <div className="bg-white p-6 rounded-lg shadow-sm">
+                        <div className="flex justify-between items-center mb-4">
+                            <h3 className="font-semibold text-gray-800">Aktivitas Terbaru</h3>
+                            <button className="text-gray-400 hover:text-gray-600">
+                                <MoreHorizontal size={20} />
+                            </button>
+                        </div>
+                        <div className="space-y-6">
+                            {dashboardData.logActivities.map((log, index) => {
+                                // Ekstrak identifier dari deskripsi, contoh: 'Laptop ASUS'
+                                const identifierMatch = log.description.match(/'([^']*)'/);
+                                const identifier = identifierMatch ? identifierMatch[1] : '';
+
+                                return (
+                                    <div key={log.id} className="flex gap-4 relative">
+                                        {/* Avatar dan Garis Timeline */}
+                                        <div className="flex flex-col items-center">
+                                            <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center font-bold text-gray-500 text-sm">
+                                                {log.akun_pengguna ? log.akun_pengguna.nama_user.substring(0, 2).toUpperCase() : 'S'}
+                                            </div>
+                                            {/* Garis vertikal, jangan tampilkan untuk item terakhir */}
+                                            {index < dashboardData.logActivities.length - 1 && (
+                                                <div className="w-px flex-1 bg-gray-200 my-2"></div>
+                                            )}
+                                        </div>
+                                        
+                                        {/* Konten Teks */}
+                                        <div className="flex-1">
+                                            <p className="text-sm text-gray-800">
+                                                <span className="font-semibold">{log.akun_pengguna?.nama_user || 'Sistem'}</span>
+                                                {` ${log.activity} ${log.description.split("'")[0].replace(log.activity, '').trim()}`}
+                                            </p>
+                                            <p className="text-sm font-semibold text-blue-600 mt-1">{identifier}</p>
+                                            <p className="text-xs text-gray-400 mt-1">{formatRelativeTime(log.created_at)}</p>
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    </div>
 
             </main>
         </Layout>

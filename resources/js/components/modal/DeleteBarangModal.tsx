@@ -15,7 +15,7 @@ type Props = {
   isOpen: boolean;
   onClose: () => void;
   item: Barang | null; // <-- Terima objek 'item' lengkap, bukan hanya 'itemName'
-  onDeleteSuccess: () => void; // <-- Callback setelah sukses hapus
+  onDeleteSuccess: (message: string) => void; // <-- Callback setelah sukses hapus
 };
 
 const DeleteBarangModal: React.FC<Props> = ({ isOpen, onClose, item, onDeleteSuccess }) => {
@@ -32,12 +32,9 @@ const DeleteBarangModal: React.FC<Props> = ({ isOpen, onClose, item, onDeleteSuc
       // Panggil API dengan metode DELETE
       await axios.delete(`/api/admin/barang/${item.id_barang}`);
       
-      // Tampilkan notifikasi sukses
-      alert(`Barang "${item.nama_barang}" berhasil dihapus.`);
-      
       // Panggil callback untuk me-refresh data di parent component
-      onDeleteSuccess();
-      
+      onDeleteSuccess(`Barang ${item.nama_barang} berhasil dihapus.`);
+    
       // Tutup modal
       onClose();
 
