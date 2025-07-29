@@ -28,6 +28,7 @@ class AkunPengguna extends Authenticatable
     public function role(){
         return $this->belongsTo(Role::class, 'id_role', 'id_role');
     }
+    
 
     public function getUser($id_user = null){
         if($id_user !== null){

@@ -13,10 +13,11 @@ type BarangOption = {
 interface Props {
   isOpen: boolean;
   onClose: () => void;
-  onSuccess: () => void;
+  onSuccess: (message: string) => void;
+  onFail: (message: string) => void;
 }
 
-const AddBarangMasukModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) => {
+const AddBarangMasukModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, onFail }) => {
   const [kodeTransaksi, setKodeTransaksi] = useState('');
   const [tanggalMasuk, setTanggalMasuk] = useState<Date | null>(new Date());
   const [selectedBarang, setSelectedBarang] = useState<string>('');
@@ -61,11 +62,11 @@ const AddBarangMasukModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) =>
         jumlah_masuk: jumlahMasuk,
         deskripsi: deskripsi,
       });
-      onSuccess();
+      onSuccess("Transaksi barang masuk berhasil ditambahkan!");
       onClose();
     } catch (error) {
       console.error("Gagal menambah transaksi:", error);
-      alert("Gagal menambah transaksi.");
+      onFail("Transaksi barang masuk gagal ditambahkan!");
     } finally {
       setIsLoading(false);
     }
@@ -77,7 +78,7 @@ const AddBarangMasukModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) =>
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
       <div className="bg-white p-6 rounded-lg shadow-xl w-full max-w-lg">
         <div className="flex justify-between items-center pb-3 border-b">
-          <h3 className="text-lg font-medium">Tambah Transaksi Barang Masuk</h3>
+          <h3 className="text-lg font-semibold text-gray-800">Tambah Transaksi Barang Masuk</h3>
           <button onClick={onClose}><X size={24} /></button>
         </div>
         <form onSubmit={handleSubmit} className="mt-4 space-y-4">

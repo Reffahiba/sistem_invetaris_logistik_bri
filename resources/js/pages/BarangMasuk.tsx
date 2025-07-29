@@ -3,8 +3,11 @@ import Layout from "@/LayoutAdmin";
 import axios from "axios";
 import { PlusCircle, ChevronDown, ChevronUp } from 'lucide-react';;
 import AddBarangMasukModal from "@/components/modal/AddBarangMasukModal";
+import SuccessModal from "@/components/modal/SuccessModal";
+import FailModal from "@/components/modal/FailModal";
 import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
+import Breadcrumb from "@/components/ui/breadcrumb";
 
 // Tipe data untuk transaksi
 type TransaksiMasuk = {
@@ -17,6 +20,11 @@ type TransaksiMasuk = {
     nama_barang: string;
   };
 };
+
+const breadcrumbPaths = [
+  { label: "Manajemen Stok", href: "/admin/barang-masuk" }, 
+  { label: "Barang Masuk" },          
+];
 
 // SortArrow Component (sama)
 const SortArrow = ({ order }: { order: 'asc' | 'desc' }) => (
@@ -46,6 +54,9 @@ function BarangMasuk() {
   const [isModalOpen, setModalOpen] = useState(false);
   const [showExportMenu, setShowExportMenu] = useState(false);
   const exportMenuRef = useRef<HTMLDivElement>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [failMessage, setFailMessage] = useState<string | null>(null);
+  
 
   // State untuk filter tanggal
   const [startDate, setStartDate] = useState<Date | null>(null);
@@ -105,6 +116,18 @@ function BarangMasuk() {
     }
   };
 
+  // Callback untuk modal sukses dan gagal
+  const handleSuccess = (message: string) => {
+    fetchData(); // Muat ulang data tabel
+    setSuccessMessage(message); // Tampilkan modal sukses dengan pesan
+  };
+
+  const handleFail = (message: string) => {
+    fetchData(); // Muat ulang data tabel
+    setFailMessage(message); // Tampilkan modal fail dengan pesan
+  };
+
+
   const getPageNumbers = () => {
     const pageNumbers = [];
     const maxPagesToShow = 5;
@@ -134,7 +157,11 @@ function BarangMasuk() {
   return (
     <Layout>
       <main className="min-h-screen">
-        <h1 className="text-2xl font-semibold text-gray-800 mb-6">Barang Masuk</h1>
+        {/* Title & Breadcrumbs */}
+        <div className="flex justify-between items-center mb-6">
+          <h1 className="text-2xl font-semibold text-gray-800">Barang Masuk</h1>
+          <Breadcrumb paths={breadcrumbPaths} />
+        </div>
 
         <div className="flex flex-col md:flex-row justify-between items-center mb-6">
             <div className="flex items-center gap-2">
@@ -337,7 +364,26 @@ function BarangMasuk() {
         </div>
       </main>
       
-      <AddBarangMasukModal isOpen={isModalOpen} onClose={() => setModalOpen(false)} onSuccess={fetchData} />
+      {/* Modal Tambah Barang Masuk */}
+      <AddBarangMasukModal
+       isOpen={isModalOpen} 
+       onClose={() => setModalOpen(false)} 
+       onSuccess={(msg) => handleSuccess(msg)}
+       onFail={(msg) => handleFail(msg)}
+       />
+
+      {/* Modal Sukses dan Gagal */}
+      <SuccessModal 
+          isOpen={!!successMessage}
+          onClose={() => setSuccessMessage(null)}
+          message={successMessage || ''}
+      />
+        
+      <FailModal 
+        isOpen={!!failMessage}
+        onClose={() => setFailMessage(null)}
+        message={failMessage || ''}
+      />
     </Layout>
   );
 }

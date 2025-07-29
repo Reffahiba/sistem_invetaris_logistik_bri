@@ -23,7 +23,7 @@ const Breadcrumb: React.FC<BreadcrumbProps> = ({ paths }) => {
             </a>
           ) : (
             // Jika tidak, tampilkan sebagai teks biasa (halaman aktif)
-            <span className="font-medium text-gray-700">{path.label}</span>
+            <span className="font-medium text-gray-250">{path.label}</span>
           )}
 
           {/* Tampilkan separator jika bukan item terakhir */}

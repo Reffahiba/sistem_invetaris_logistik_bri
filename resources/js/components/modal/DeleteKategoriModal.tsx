@@ -11,7 +11,7 @@ type Kategori = {
 interface Props {
   isOpen: boolean;
   onClose: () => void;
-  onSuccess: () => void;
+  onSuccess: (message: string) => void;
   itemToDelete: Kategori | null;
 }
 
@@ -23,7 +23,7 @@ const DeleteKategoriModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, item
     setIsLoading(true);
     try {
       await axios.delete(`/api/admin/kategori/${itemToDelete.id_kategori}`);
-      onSuccess();
+      onSuccess("Kategori berhasil dihapus.");
       onClose();
     } catch (error) {
       console.error("Gagal menghapus kategori:", error);

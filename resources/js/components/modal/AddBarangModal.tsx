@@ -20,13 +20,15 @@ type KategoriOption = {
 interface AddBarangModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSuccess: () => void;
+  onSuccess: (message: string) => void;
+  onFail: (message: string) => void;
 }
 
 const AddBarangModal: React.FC<AddBarangModalProps> = ({
   isOpen,
   onClose,
   onSuccess,
+  onFail,
 }) => {
   const [newBarangData, setNewBarangData] = useState<NewBarang>({
     gambar_barang: null,
@@ -200,13 +202,12 @@ const AddBarangModal: React.FC<AddBarangModalProps> = ({
           }
         }
       });
-
-      alert("Barang baru berhasil ditambahkan!");
+      // Reset form setelah sukses
       onClose();
-      onSuccess();
+      onSuccess("Barang baru berhasil ditambahkan!");
     }catch (error) {
         console.error("Gagal menambahkan barang:", error);
-        alert("Gagal menambahkan barang. Periksa konsol untuk detail.");
+        onFail("Gagal menambahkan barang. Silakan coba lagi.");
     }finally {
         setIsLoading(false);
         setUploadProgress(0);
@@ -233,7 +234,7 @@ const AddBarangModal: React.FC<AddBarangModalProps> = ({
       >
         {/* Header Modal */}
         <div className="flex justify-between items-center pb-4 border-b border-gray-200 mb-4">
-          <h2 className="text-2xl font-semibold text-gray-800">Tambah Barang Baru</h2>
+          <h2 className="text-lg font-semibold text-gray-800">Tambah Barang Baru</h2>
           <button
             onClick={onClose}
             className="text-gray-500 hover:text-gray-700 p-1 rounded-full hover:bg-gray-100 transition"

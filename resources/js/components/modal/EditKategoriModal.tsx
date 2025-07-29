@@ -13,7 +13,7 @@ type Kategori = {
 interface Props {
   isOpen: boolean;
   onClose: () => void;
-  onSuccess: () => void;
+  onSuccess: (message: string) => void;
   itemToEdit: Kategori | null;
 }
 
@@ -38,7 +38,7 @@ const EditKategoriModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, itemTo
         nama_kategori: namaKategori,
         deskripsi: deskripsi,
       });
-      onSuccess();
+      onSuccess("Kategori berhasil diperbarui!");
       onClose();
     } catch (error) {
       console.error("Gagal mengedit kategori:", error);
@@ -55,7 +55,7 @@ const EditKategoriModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, itemTo
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
       <div className="bg-white p-6 rounded-lg shadow-xl w-full max-w-md">
         <div className="flex justify-between items-center pb-3 border-b">
-          <h3 className="text-lg font-medium">Edit Kategori</h3>
+          <h3 className="text-lg font-semibold text-gray-800">Edit Kategori</h3>
           <button onClick={onClose}><X size={24} /></button>
         </div>
         <form onSubmit={handleSubmit} className="mt-4 space-y-4">
