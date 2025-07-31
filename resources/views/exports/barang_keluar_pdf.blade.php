@@ -99,7 +99,7 @@
                     <td>{{ $index + 1 }}</td>
                     <td>{{ $item->permintaan->id_permintaan }}</td>
                     <td>{{ \Carbon\Carbon::parse($item->permintaan->tanggal_minta)->format('d-m-Y') }}</td>
-                    <td>{{ $item->user->nama_user ?? '-' }}</td>
+                    <td>{{ $item->permintaan->akun_pengguna->nama_user ?? '-' }}</td>
                     <td>{{ $item->barang->nama_barang ?? '-' }}</td>
                     <td>-{{ $item->jumlah_minta }}</td>
                 </tr>

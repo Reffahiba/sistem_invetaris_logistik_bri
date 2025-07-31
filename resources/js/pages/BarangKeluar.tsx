@@ -14,7 +14,7 @@ type TransaksiKeluar = {
   permintaan: {
     id_permintaan: string;
     tanggal_minta: string;
-    user: {
+    akun_pengguna: {
       nama_user: string;
     };
   };
@@ -278,7 +278,7 @@ function BarangKeluar() {
                       <td className="px-6 py-4 text-gray-500">{(currentPage - 1) * perPage + index + 1}</td>
                       <td className="px-6 py-4 font-mono text-gray-500 text-sm">{trans.permintaan.id_permintaan}</td>
                       <td className="px-6 py-4 text-gray-500">{new Date(trans.permintaan.tanggal_minta).toLocaleDateString('id-ID')}</td>
-                      <td className="px-6 py-4 text-gray-500">{trans.permintaan.user.nama_user}</td>
+                      <td className="px-6 py-4 text-gray-500">{trans.permintaan.akun_pengguna.nama_user}</td>
                       <td className="px-6 py-4 text-gray-500">{trans.barang.nama_barang}</td>
                       <td className="px-6 py-4 text-red-600 font-bold">-{trans.jumlah_minta}</td>
                     </tr>

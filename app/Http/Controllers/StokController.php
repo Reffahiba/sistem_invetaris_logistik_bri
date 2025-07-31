@@ -133,7 +133,7 @@ class StokController extends BaseController
         // Mulai query dari DetailPermintaan
         $query = DetailPermintaan::with([
                 'permintaan:id_permintaan,tanggal_minta,id_user', // Ambil tanggal & id_user dari permintaan
-                'permintaan.user:id_user,nama_user', // Ambil nama user dari relasi di permintaan
+                'permintaan.akun_pengguna:id_user,nama_user', // Ambil nama user dari relasi di permintaan
                 'barang:id_barang,nama_barang' // Ambil nama barang
             ])
             // Hanya tampilkan permintaan yang sudah disetujui (misalnya status 'selesai')
@@ -149,7 +149,7 @@ class StokController extends BaseController
         if ($sortBy === 'peminta') {
             $query->select('detail_permintaan.*') // Hindari ambiguitas kolom id
                     ->join('permintaan', 'detail_permintaan.id_permintaan', '=', 'permintaan.id_permintaan')
-                    ->join('users', 'permintaan.id_user', '=', 'akun_pengguna.id_user')
+                    ->join('akun_pengguna', 'permintaan.id_user', '=', 'akun_pengguna.id_user')
                     ->orderBy('akun_pengguna.nama_user', $sortOrder);
         } elseif ($sortBy === 'barang') {
             $query->select('detail_permintaan.*')
@@ -182,7 +182,7 @@ class StokController extends BaseController
                     $subq->where('nama_barang', 'like', "%{$search}%");
                 })
                 // Cari di relasi bersarang 'permintaan.user'
-                ->orWhereHas('permintaan.user', function ($subq) use ($search) {
+                ->orWhereHas('permintaan.akun_pengguna', function ($subq) use ($search) {
                     $subq->where('nama_user', 'like', "%{$search}%");
                 });
             });
@@ -295,38 +295,55 @@ class StokController extends BaseController
 
     public function previewBarangKeluarPdf(Request $request)
     {
-        $query = DetailPermintaan::query()
-            ->join('permintaan', 'detail_permintaan.id_permintaan', '=', 'permintaan.id_permintaan')
-            ->join('akun_pengguna', 'permintaan.id_user', '=', 'akun_pengguna.id_user') 
-            ->join('barang', 'detail_permintaan.id_barang', '=', 'barang.id_barang')
-            ->where('permintaan.status', 'telah diterima')
-            ->select(
-                'detail_permintaan.*',
-                'permintaan.tanggal_minta',
-                'akun_pengguna.nama_user',
-                'barang.nama_barang'
-            );
+        // Gunakan eager loading untuk memuat relasi, bukan join manual untuk data
+        $query = DetailPermintaan::with([
+            'permintaan:id_permintaan,tanggal_minta,id_user',
+            'permintaan.akun_pengguna:id_user,nama_user',
+            'barang:id_barang,nama_barang'
+        ])->whereHas('permintaan', function ($q) {
+            $q->where('status', 'telah diterima');
+        });
 
+        // Terapkan filter tanggal
         if ($request->filled('start_date') && $request->filled('end_date')) {
             $startDate = Carbon::parse($request->input('start_date'))->startOfDay();
             $endDate = Carbon::parse($request->input('end_date'))->endOfDay();
-            $query->whereBetween('permintaan.tanggal_minta', [$startDate, $endDate]);
-        }
-
-        if ($request->filled('search')) {
-            $search = $request->search;
-            $query->where(function ($q) use ($search) {
-                $q->where('barang.nama_barang', 'like', "%{$search}%")
-                ->orWhere('akun_pengguna.nama_user', 'like', "%{$search}%");
+            $query->whereHas('permintaan', function ($q) use ($startDate, $endDate) {
+                $q->whereBetween('tanggal_minta', [$startDate, $endDate]);
             });
         }
 
-        // Mengurutkan berdasarkan tanggal dari tabel permintaan
-        $data = $query->orderBy(
-            $request->input('sortBy', 'permintaan.tanggal_minta'),
-            $request->input('sortOrder', 'desc')
-        )->get();
+        // Terapkan filter pencarian
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->whereHas('barang', function ($subq) use ($search) {
+                    $subq->where('nama_barang', 'like', "%{$search}%");
+                })->orWhereHas('permintaan.akun_pengguna', function ($subq) use ($search) {
+                    $subq->where('nama_user', 'like', "%{$search}%");
+                });
+            });
+        }
 
+        // Lakukan join HANYA untuk sorting jika diperlukan
+        $sortBy = $request->input('sortBy', 'tanggal_minta');
+        $sortOrder = $request->input('sortOrder', 'desc');
+        
+        $query->select('detail_permintaan.*')
+              ->join('permintaan', 'detail_permintaan.id_permintaan', '=', 'permintaan.id_permintaan');
+
+        if ($sortBy === 'peminta') {
+            $query->join('akun_pengguna', 'permintaan.id_user', '=', 'akun_pengguna.id_user')
+                  ->orderBy('akun_pengguna.nama_user', $sortOrder);
+        } elseif ($sortBy === 'barang') {
+            $query->join('barang', 'detail_permintaan.id_barang', '=', 'barang.id_barang')
+                  ->orderBy('barang.nama_barang', $sortOrder);
+        } else {
+            $query->orderBy('permintaan.tanggal_minta', $sortOrder);
+        }
+
+        $data = $query->get();
+            
         return view('exports.barang_keluar_pdf', [
             'data' => $data,
             'timestamp' => Carbon::now()->translatedFormat('d F Y, H:i'),
@@ -344,7 +361,7 @@ class StokController extends BaseController
         // Query awal
         $query = DetailPermintaan::with([
             'permintaan:id_permintaan,id_user,tanggal_minta', // pastikan juga include id_user
-            'permintaan.user:id_user,nama_user',
+            'permintaan.akun_pengguna:id_user,nama_user',
             'barang:id_barang,nama_barang'
         ])->whereHas('permintaan', function ($q) {
             $q->where('status', 'telah diterima');
@@ -365,7 +382,7 @@ class StokController extends BaseController
             $query->where(function ($q) use ($search) {
                 $q->whereHas('barang', function ($subq) use ($search) {
                     $subq->where('nama_barang', 'like', "%{$search}%");
-                })->orWhereHas('user', function ($subq) use ($search) {
+                })->orWhereHas('akun_pengguna', function ($subq) use ($search) {
                     $subq->where('nama_user', 'like', "%{$search}%");
                 });
             });
@@ -401,7 +418,7 @@ class StokController extends BaseController
                 fputcsv($file, [
                     $transaksi->permintaan->id_permintaan ?? '-',
                     Carbon::parse($transaksi->permintaan->tanggal_minta ?? now())->format('d-m-Y'),
-                    $transaksi->permintaan->user->nama_user ?? '-',
+                    $transaksi->permintaan->akun_pengguna->nama_user ?? '-',
                     $transaksi->barang->nama_barang ?? '-',
                     $transaksi->jumlah_minta ?? 0,
                 ]);
