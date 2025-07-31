@@ -111,8 +111,8 @@ const Sidebar: React.FC<SidebarProps> = ({ currentPath, isOpen, onClose }) => {
         { href: "/admin/barang-keluar", label: "Barang Keluar" },
       ],
     },
-    { href: "/admin-permintaan", iconName: "note", label: "Permintaan" },
-    { href: "/admin-kelola-akun", iconName: "people", label: "Kelola Akun" },
+    { href: "/admin/permintaan", iconName: "note", label: "Permintaan" },
+    { href: "/admin/kelola-akun", iconName: "people", label: "Kelola Akun" },
   ];
 
   const SidebarContent = () => (

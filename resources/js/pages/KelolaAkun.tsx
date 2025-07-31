@@ -69,7 +69,7 @@ const KelolaAkun = () => {
 
     const fetchAkun = async () => {
         try {
-            const response = await axios.get("/admin_kelola_akun");
+            const response = await axios.get("/admin/kelola-akun");
             setAkunList(response.data);
         } catch (error) {
             console.error("Gagal memuat data akun:", error);
@@ -110,13 +110,13 @@ const KelolaAkun = () => {
 
             if (editingId) {
                 await axios.put(`/admin-edit-akun/${editingId}`, payload);
-                window.location.href = "/admin-kelola-akun";
+                window.location.href = "/admin/kelola-akun";
             } else {
                 await axios
                     .post("/admin-tambah-akun", payload)
                     .then((response) => {
                         alert(response.data.message);
-                        window.location.href = "/admin-kelola-akun";
+                        window.location.href = "/admin/kelola-akun";
                     })
                     .catch((error) => {
                         console.error(error);
@@ -144,8 +144,8 @@ const KelolaAkun = () => {
     const handleDelete = async (id: number) => {
         if (confirm("Yakin ingin menghapus akun ini?")) {
             try {
-                await axios.delete(`/admin_hapus_akun/${id}`);
-                window.location.href = "/admin_kelola_akun";
+                await axios.delete(`/admin-hapus-akun/${id}`);
+                window.location.href = "/admin/kelola-akun";
                 fetchAkun();
             } catch (error) {
                 console.error("Gagal hapus akun", error);
