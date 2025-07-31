@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { ChevronDown } from 'lucide-react';
-import { Link } from '@inertiajs/react'; // Menggunakan Link dari Inertia untuk navigasi
 
 interface NavItemData {
   href: string;
@@ -52,12 +51,12 @@ const NavItem: React.FC<NavItemProps> = ({ item, isActive, isSubItemActive }) =>
              <ul className="pl-8 pt-1 pb-2 space-y-1">
               {item.subItems.map(subItem => (
                 <li key={subItem.href}>
-                  <Link
+                  <a
                     href={subItem.href}
                     className={`block p-2 rounded-md text-sm ${window.location.pathname === subItem.href ? 'bg-blue-100 text-blue-700 font-medium' : 'hover:bg-gray-100'}`}
                   >
                     {subItem.label}
-                  </Link>
+                  </a>
                 </li>
               ))}
             </ul>
@@ -68,19 +67,19 @@ const NavItem: React.FC<NavItemProps> = ({ item, isActive, isSubItemActive }) =>
   }
 
   return (
-   <li>
-    <Link
-      href={item.href}
-      className={`flex items-center gap-3 p-2 mb-3 rounded-lg text-sm transition-colors duration-300 ease-in-out ${isActive ? 'bg-blue-100 text-blue-600 font-semibold' : 'text-gray-700 hover:bg-gray-200'}`}
-    >
-      <img
-        src={isActive ? `/assets/${item.iconName}-blue.png` : `/assets/${item.iconName}.png`}
-        alt={item.label}
-        className="w-6 h-6 ml-1"
-      />
-      <span>{item.label}</span>
-    </Link>
-  </li>
+     <li>
+      <a
+        href={item.href}
+        className={`flex items-center gap-3 p-2 mb-3 rounded-lg text-sm transition-colors duration-300 ease-in-out ${isActive ? 'bg-blue-100 text-blue-600 font-semibold' : 'text-gray-700 hover:bg-gray-200'}`}
+      >
+        <img
+          src={isActive ? `/assets/${item.iconName}-blue.png` : `/assets/${item.iconName}.png`}
+          alt={item.label}
+          className="w-6 h-6 ml-1"
+        />
+        <span>{item.label}</span>
+      </a>
+    </li>
   )
 };
 
@@ -138,7 +137,6 @@ const Sidebar: React.FC<SidebarProps> = ({ currentPath, isOpen, onClose }) => {
           })}
         </ul>
       </nav>
-    
     </div>
   );
 
