@@ -117,17 +117,17 @@ class StokController extends BaseController
         // Lakukan sorting berdasarkan relasi jika diperlukan
         if ($sortBy === 'peminta') {
             $query->select('detail_permintaan.*') // Hindari ambiguitas kolom id
-                  ->join('permintaan', 'detail_permintaan.id_permintaan', '=', 'permintaan.id_permintaan')
-                  ->join('users', 'permintaan.id_user', '=', 'akun_pengguna.id_user')
-                  ->orderBy('akun_pengguna.nama_user', $sortOrder);
+                    ->join('permintaan', 'detail_permintaan.id_permintaan', '=', 'permintaan.id_permintaan')
+                    ->join('users', 'permintaan.id_user', '=', 'akun_pengguna.id_user')
+                    ->orderBy('akun_pengguna.nama_user', $sortOrder);
         } elseif ($sortBy === 'barang') {
             $query->select('detail_permintaan.*')
-                  ->join('barang', 'detail_permintaan.id_barang', '=', 'barang.id_barang')
-                  ->orderBy('barang.nama_barang', $sortOrder);
+                    ->join('barang', 'detail_permintaan.id_barang', '=', 'barang.id_barang')
+                    ->orderBy('barang.nama_barang', $sortOrder);
         } else {
-             $query->select('detail_permintaan.*')
-                   ->join('permintaan', 'detail_permintaan.id_permintaan', '=', 'permintaan.id_permintaan')
-                   ->orderBy('permintaan.tanggal_minta', $sortOrder);
+            $query->select('detail_permintaan.*')
+                    ->join('permintaan', 'detail_permintaan.id_permintaan', '=', 'permintaan.id_permintaan')
+                    ->orderBy('permintaan.tanggal_minta', $sortOrder);
         }
 
         // Filtering berdasarkan rentang tanggal

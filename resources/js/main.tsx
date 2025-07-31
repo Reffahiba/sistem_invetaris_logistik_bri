@@ -9,7 +9,8 @@ import Permintaan from "@/pages/Permintaan";
 import KelolaAkun from "@/pages/KelolaAkun";
 import DashboardPegawai from "@/DashboardPegawai";
 import AjukanPermintaan from "@/pages/AjukanPermintaan";
-import LacakPermintaan from "./pages/LacakPermintaan";
+import LacakPermintaan from "@/pages/LacakPermintaan";
+import RiwayatPermintaan from "@/pages/RiwayatPermintaan";
 import "/resources/css/app.css";
 
 const dashboard = document.getElementById("dashboard-root");
@@ -102,6 +103,14 @@ if (lacakPermintaan) {
     ReactDOM.createRoot(lacakPermintaan).render(
         <React.StrictMode>
             <LacakPermintaan />
+        </React.StrictMode>
+    );
+}
+
+if (riwayatPermintaan) {
+    ReactDOM.createRoot(riwayatPermintaan).render(
+        <React.StrictMode>
+            <RiwayatPermintaan />
         </React.StrictMode>
     );
 }

@@ -19,8 +19,8 @@ return new class extends Migration
             $table->string('password');
             $table->unsignedBigInteger('id_divisi');
             $table->unsignedBigInteger('id_role');
-            $table->foreign('id_divisi')->references('id_divisi')->on('divisi')->onDelete('cascade');
-            $table->foreign('id_role')->references('id_role')->on('role')->onDelete('cascade');
+            $table->foreign('id_divisi')->references('id_divisi')->on('divisi')->onDelete('restrict');
+            $table->foreign('id_role')->references('id_role')->on('role')->onDelete('restrict');
             $table->timestamps();
         });
     }

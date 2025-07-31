@@ -12,9 +12,10 @@ class DetailPermintaan extends Model
     protected $guarded = ['id_detail'];
     protected $table = 'detail_permintaan';
     protected $fillable = ['jumlah_minta', 'id_permintaan', 'id_barang'];
+    protected $primaryKey = 'id_detail';
 
     public function permintaan(){
-        return $this->belongsTo(Permintaan::class, 'id_permintaan');
+        return $this->belongsTo(Permintaan::class, 'id_permintaan', 'id_permintaan');
     }
 
     public function barang(){

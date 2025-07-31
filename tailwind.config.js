@@ -72,7 +72,7 @@ module.exports = {
                 sm: "calc(var(--radius) - 4px)",
             },
             boxShadow: {
-                "left-md": "-3px 0 0px rgba(0,0,0,0.1)",
+                "left-sm": "-3px 0 0px rgba(0,0,0,0.1)",
             },
             backgroundImage: {
                 "carousel-bg": "url('/assets/background banner.png')",
@@ -85,4 +85,3 @@ module.exports = {
     },
     plugins: [require("tailwindcss-animate")],
 };
-
