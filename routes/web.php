@@ -21,16 +21,8 @@ use App\Http\Controllers\PegawaiLoginController;
 |
 */
 
-// Route::get('/', function () {
-//     return view('welcome');
-// });
-
-Route::get('/test-env', function () {
-    return env('DB_USERNAME');
-});
-
-// ---------------- Admin ----------------
-Route::middleware(['auth:admin'])->group(function () {
+// ---------------- Admin Pages ----------------
+Route::middleware(['auth:admin', 'prevent.back.history'])->group(function () {
     Route::get('/admin/dashboard', [AdminFiturController::class, 'dashboard'])->name('admin-dashboard');
     Route::get('/dashboard-data', [AdminFiturController::class, 'getDashboardData']);
     Route::get('/admin/data-barang', [BarangController::class, 'kelolaBarang'])->name('admin-barang');
@@ -43,6 +35,15 @@ Route::middleware(['auth:admin'])->group(function () {
     Route::post('/admin-tambah-akun', [AdminFiturController::class, 'admin_tambah_akun'])->name('admin_tambah_akun');
     Route::put('/admin-edit-akun/{id}', [AdminFiturController::class, 'admin_edit_akun'])->name('admin_edit_akun');
     Route::delete('/admin-hapus-akun/{id}', [AdminFiturController::class, 'admin_hapus_akun'])->name('admin_hapus_akun');
+
+    Route::get('admin/barang-masuk/preview-pdf', [StokController::class, 'previewBarangMasukPdf'])
+        ->name('admin.barang-masuk.preview-pdf');
+    Route::get('admin/barang-masuk/export-excel', [StokController::class, 'exportBarangMasukExcel'])
+        ->name('admin.barang-masuk.export-excel');
+    Route::get('admin/barang-keluar/preview-pdf', [StokController::class, 'previewBarangKeluarPdf'])
+        ->name('admin.barang-keluar.preview-pdf');
+    Route::get('admin/barang-keluar/export-excel', [StokController::class, 'exportBarangKeluarExcel'])
+        ->name('admin.barang-keluar.export-excel');
 });
 
 
@@ -86,3 +87,8 @@ Route::middleware(['auth:pegawai'])->group(function () {
 Route::get('/', [PegawaiLoginController::class, 'login'])->name('login');
 Route::post('/proses-login', [PegawaiLoginController::class, 'proses_login'])->name('proses_login');
 Route::post('/logout', [PegawaiLoginController::class, 'logout'])->name('logout');
+
+// ---------------- Error Pages ----------------
+Route::fallback(function () {
+  return view('errors.404'); 
+});

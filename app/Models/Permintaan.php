@@ -15,7 +15,7 @@ class Permintaan extends Model
     protected $fillable = ['tanggal_minta', 'status', 'id_user'];
 
     public function user(){
-        return $this->belongsTo(Permintaan::class, 'id_user');
+        return $this->belongsTo(AkunPengguna::class, 'id_user', 'id_user');
     }
 
     public function detailPermintaan(){
