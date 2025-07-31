@@ -93,10 +93,7 @@
                 {{-- Button --}}
                 <button
                     type="submit"
-                    class="w-full mt-4 rounded-sm text-white px-4 py-2 shadow-sm transition duration-300 
-                    [background:radial-gradient(circle_at_center,#F46F23,#d35400)] 
-                    hover:shadow-orange-400/70 hover:shadow-lg 
-                    focus:outline-none focus:ring-2 focus:ring-orange-400 focus:ring-opacity-60 font-semibold"
+                    class="w-full mt-4 bg-[#F46F23] text-white px-4 py-2 rounded-lg shadow-lg shadow-[#F46F23]/40 hover:bg-orange-600 hover:shadow-xl hover:shadow-orange-600/40 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 transition-all duration-300 font-semibold"
                 >
                     Login
                 </button>

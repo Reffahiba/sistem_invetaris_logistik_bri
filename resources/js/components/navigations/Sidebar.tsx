@@ -72,7 +72,7 @@ const NavItem: React.FC<NavItemProps> = ({
                                 <li key={subItem.href}>
                                     <a
                                         href={subItem.href}
-                                        className={`block p-2 rounded-sm text-sm ${
+                                        className={`block p-2 rounded-md text-sm ${
                                             window.location.pathname ===
                                             subItem.href
                                                 ? "bg-blue-100 text-blue-700 font-medium"
@@ -135,16 +135,16 @@ const Sidebar: React.FC<SidebarProps> = ({ currentPath, isOpen, onClose }) => {
         },
         {
             href: "#",
-            iconName: "arrow-right",
+            iconName: "arrow-right-left",
             label: "Manajemen Stok",
             subItems: [
                 { href: "/admin/barang-masuk", label: "Barang Masuk" },
                 { href: "/admin/barang-keluar", label: "Barang Keluar" },
             ],
         },
-        { href: "/admin/permintaan", iconName: "note", label: "Permintaan" },
+        { href: "/admin-permintaan", iconName: "note", label: "Permintaan" },
         {
-            href: "/admin/kelola-akun",
+            href: "/admin-kelola-akun",
             iconName: "people",
             label: "Kelola Akun",
         },
@@ -152,11 +152,11 @@ const Sidebar: React.FC<SidebarProps> = ({ currentPath, isOpen, onClose }) => {
 
     const SidebarContent = () => (
         <div className="flex flex-col h-full">
-            <div className="px-4 pt-1 mb-6">
+            <div className="px-4 mb-4">
                 <img
-                    src="/assets/Logo Brilog.png"
-                    alt="logo"
-                    className="w-40 h-20"
+                    src="/assets/logo-brilog.png"
+                    alt="BRI Log Logo"
+                    className="h-14 w-28"
                 />
             </div>
             <nav className="flex-1">

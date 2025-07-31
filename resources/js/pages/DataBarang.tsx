@@ -246,7 +246,7 @@ function DataBarang() {
 
     // Pagination Disabled & Activated Effect
     const basePaginationButtonClass =
-        "px-3 py-1 rounded-sm font-medium transition duration-150 ease-in-out text-sm";
+        "px-3 py-1 rounded-md font-medium transition duration-150 ease-in-out text-sm";
     const activePaginationButtonClass =
         "bg-blue-600 text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2";
     const inactivePaginationButtonClass =
@@ -292,7 +292,7 @@ function DataBarang() {
                                 />
                             </button>
                             {showKategoriDropdown && (
-                                <div className="absolute left-0 mt-2 w-48 bg-white rounded-sm shadow-lg py-1 ring-1 ring-black ring-opacity-5 focus:outline-none z-10">
+                                <div className="absolute left-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 ring-1 ring-black ring-opacity-5 focus:outline-none z-10">
                                     <button
                                         onClick={() =>
                                             handleKategoriSelect(null)
@@ -321,7 +321,7 @@ function DataBarang() {
                     <div className="flex items-center space-x-3 w-full md:w-auto justify-end mt-4 md:mt-0">
                         <button
                             onClick={() => setIsModalOpen(true)}
-                            className="flex items-center px-4 py-2 bg-primary text-white font-medium rounded-lg shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition duration-200 ease-in-out"
+                            className="flex items-center px-4 py-2 bg-primary text-white font-medium rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition duration-200 ease-in-out"
                         >
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
@@ -346,7 +346,7 @@ function DataBarang() {
                                 onClick={() =>
                                     setShowExportMenu(!showExportMenu)
                                 }
-                                className="p-2 bg-gray-200 text-gray-600 rounded-lg shadow-sm hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 transition duration-200 ease-in-out"
+                                className="p-2 bg-gray-200 text-gray-600 rounded-lg shadow-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 transition duration-200 ease-in-out"
                                 aria-expanded={showExportMenu}
                                 aria-haspopup="true"
                             >
@@ -363,7 +363,7 @@ function DataBarang() {
 
                             {/* Menu Dropdown Export */}
                             {showExportMenu && (
-                                <div className="absolute right-0 mt-2 w-48 bg-white rounded-sm shadow-lg py-1 ring-1 ring-black ring-opacity-5 focus:outline-none z-10">
+                                <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 ring-1 ring-black ring-opacity-5 focus:outline-none z-10">
                                     <button
                                         onClick={handleExportPDF}
                                         className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
@@ -385,7 +385,7 @@ function DataBarang() {
                 </div>
 
                 {/* Search Bar dan Entry */}
-                <div className="bg-white p-6 rounded-lg shadow-sm">
+                <div className="bg-white p-6 rounded-lg shadow-md">
                     <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pb-6 border-b border-gray-200 mb-6">
                         <input
                             type="text"
@@ -530,13 +530,13 @@ function DataBarang() {
                                                             alt={
                                                                 barang.nama_barang
                                                             }
-                                                            className="h-12 w-12 object-cover rounded-sm shadow-sm"
+                                                            className="h-12 w-12 object-cover rounded-md shadow-sm"
                                                         />
                                                         {/* Icon preview muncul saat hover */}
                                                         {hoveredImageId ===
                                                             barang.id_barang && (
                                                             <div
-                                                                className="absolute inset-0 flex items-center justify-center mt-4 ml-6 h-12 w-12 bg-black bg-opacity-35 rounded-sm cursor-pointer transition-opacity duration-200 opacity-0 group-hover:opacity-100"
+                                                                className="absolute inset-0 flex items-center justify-center mt-4 ml-6 h-12 w-12 bg-black bg-opacity-35 rounded-md cursor-pointer transition-opacity duration-200 opacity-0 group-hover:opacity-100"
                                                                 onClick={() =>
                                                                     openImageModal(
                                                                         barang.gambar_barang,
@@ -571,8 +571,8 @@ function DataBarang() {
                                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                                 {barang.satuan}
                                             </td>
-                                            <td className=" py-4 whitespace-nowrap text-right text-sm font-medium">
-                                                <div className="flex items-center justify-center space-x-2">
+                                            <td className=" py-4 whitespace-nowrap text-center text-sm font-medium">
+                                                <div className="flex items-center space-x-2">
                                                     <button
                                                         onClick={() =>
                                                             handleOpenEditModal(

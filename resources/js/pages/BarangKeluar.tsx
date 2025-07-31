@@ -1,10 +1,18 @@
 import React, { useEffect, useState, useRef } from "react";
 import Layout from "@/LayoutAdmin";
 import axios from "axios";
-import { ChevronDown, ChevronUp, Calendar, X } from "lucide-react";
+import {
+    FileSpreadsheet,
+    FileText,
+    ChevronDown,
+    ChevronUp,
+    Calendar,
+    X,
+} from "lucide-react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import Breadcrumb from "@/components/ui/breadcrumb";
+import ExportPreview from "@/components/exports/ExportPreview";
 
 // Tipe data baru untuk transaksi keluar
 type TransaksiKeluar = {
@@ -14,7 +22,7 @@ type TransaksiKeluar = {
         id_permintaan: string;
         tanggal_minta: string;
         user: {
-            nama: string;
+            nama_user: string;
         };
     };
     barang: {
@@ -27,7 +35,7 @@ const breadcrumbPaths = [
     { label: "Barang Keluar" },
 ];
 
-// SortArrow Component (tidak berubah)
+// SortArrow Component
 const SortArrow = ({ order }: { order: "asc" | "desc" }) => (
     <div className="inline-flex flex-col items-center justify-center ml-1">
         <ChevronUp
@@ -52,10 +60,14 @@ function BarangKeluar() {
     const [perPage, setPerPage] = useState(10);
     const [totalPages, setTotalPages] = useState(1);
     const [isLoading, setIsLoading] = useState(false);
+    const [showExportMenu, setShowExportMenu] = useState(false);
+    const exportMenuRef = useRef<HTMLDivElement>(null);
 
-    // 2. Kembalikan state untuk start dan end date
     const [startDate, setStartDate] = useState<Date | null>(null);
     const [endDate, setEndDate] = useState<Date | null>(null);
+
+    const [isPreviewing, setIsPreviewing] = useState(false);
+    const [previewHtml, setPreviewHtml] = useState("");
 
     const fetchData = async () => {
         setIsLoading(true);
@@ -102,6 +114,96 @@ function BarangKeluar() {
         }
     };
 
+    // Preview PDF dan Export Excel
+    const handlePreview = async () => {
+        setIsLoading(true);
+        setShowExportMenu(false);
+        try {
+            const params = new URLSearchParams({
+                search: search,
+                start_date: startDate
+                    ? startDate.toISOString().split("T")[0]
+                    : "",
+                end_date: endDate ? endDate.toISOString().split("T")[0] : "",
+                sortBy: sortBy,
+                sortOrder: sortOrder,
+            }).toString();
+
+            const response = await axios.get(
+                `/admin/barang-keluar/preview-pdf?${params}`
+            );
+            setPreviewHtml(response.data);
+            setIsPreviewing(true);
+        } catch (error) {
+            console.error("Gagal memuat preview:", error);
+            alert("Gagal memuat pratinjau laporan.");
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const handleActualExportExcel = () => {
+        // Buat URL dengan parameter filter
+        const params = new URLSearchParams({
+            search: search,
+            start_date: startDate ? startDate.toISOString().split("T")[0] : "",
+            end_date: endDate ? endDate.toISOString().split("T")[0] : "",
+            sortBy: sortBy,
+            sortOrder: sortOrder,
+        }).toString();
+
+        // Buka URL di tab baru untuk men-trigger download
+        window.open(`/admin/barang-keluar/export-excel?${params}`, "_blank");
+        setShowExportMenu(false);
+    };
+
+    // 4. Jika isPreviewing true, render halaman preview
+    if (isPreviewing) {
+        return (
+            <ExportPreview
+                htmlContent={previewHtml}
+                onBack={() => setIsPreviewing(false)}
+                onExportExcel={handleActualExportExcel}
+            />
+        );
+    }
+
+    const getPageNumbers = () => {
+        const pageNumbers = [];
+        const maxPagesToShow = 5;
+        let startPage = Math.max(
+            1,
+            currentPage - Math.floor(maxPagesToShow / 2)
+        );
+        let endPage = Math.min(
+            totalPages,
+            currentPage + Math.floor(maxPagesToShow / 2)
+        );
+
+        if (endPage - startPage + 1 < maxPagesToShow) {
+            startPage = Math.max(1, endPage - maxPagesToShow + 1);
+        }
+        if (startPage === 1 && endPage < totalPages) {
+            endPage = Math.min(totalPages, maxPagesToShow);
+        }
+
+        for (let i = startPage; i <= endPage; i++) {
+            pageNumbers.push(i);
+        }
+        return pageNumbers;
+    };
+
+    // Pagination Disabled & Activated Effect
+    const basePaginationButtonClass =
+        "px-3 py-1 rounded-md font-medium transition duration-150 ease-in-out text-sm";
+    const activePaginationButtonClass =
+        "bg-blue-600 text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2";
+    const inactivePaginationButtonClass =
+        "bg-gray-200 text-gray-700 hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed";
+    const activePageNumberClass = "bg-blue-600 text-white font-bold";
+    const inactivePageNumberClass =
+        "bg-white text-gray-700 border border-gray-300 hover:bg-gray-100";
+
     return (
         <Layout>
             <main className="min-h-screen">
@@ -127,16 +229,58 @@ function BarangKeluar() {
                         <span>-</span>
                         <DatePicker
                             selected={endDate}
-                            onChange={(date) => setStartDate(date)}
+                            onChange={(date: Date | null) => setEndDate(date)}
                             placeholderText="Tanggal Akhir"
                             className="border rounded-lg px-3 py-2 w-40"
                             dateFormat="dd/MM/yyyy"
                             isClearable
                         />
                     </div>
+
+                    <div className="relative" ref={exportMenuRef}>
+                        <button
+                            onClick={() => setShowExportMenu(!showExportMenu)}
+                            className="p-2 bg-gray-200 text-gray-600 rounded-lg shadow-md hover:bg-gray-300"
+                        >
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                className="h-5 w-5"
+                                viewBox="0 0 20 20"
+                                fill="currentColor"
+                            >
+                                <path d="M10 6a2 2 0 110-4 2 2 0 010 4zm0 6a2 2 0 110-4 2 2 0 010 4zm0 6a2 2 0 110-4 2 2 0 010 4z" />
+                            </svg>
+                        </button>
+                        {showExportMenu && (
+                            <div className="absolute right-0 mt-2 w-52 bg-white rounded-md shadow-lg py-1 ring-1 ring-black ring-opacity-5 z-10">
+                                <button
+                                    onClick={handlePreview}
+                                    className="flex items-center gap-3 w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                    role="menuitem"
+                                >
+                                    <FileText
+                                        size={16}
+                                        className="text-red-500"
+                                    />
+                                    <span>Export PDF</span>
+                                </button>
+                                <button
+                                    onClick={handleActualExportExcel} // Asumsi ini untuk Excel
+                                    className="flex items-center gap-3 w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                    role="menuitem"
+                                >
+                                    <FileSpreadsheet
+                                        size={16}
+                                        className="text-green-600"
+                                    />
+                                    <span>Export CSV</span>
+                                </button>
+                            </div>
+                        )}
+                    </div>
                 </div>
 
-                <div className="bg-white p-6 rounded-lg shadow-sm">
+                <div className="bg-white p-6 rounded-lg shadow-md">
                     <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pb-6 border-b border-gray-200 mb-6">
                         <input
                             type="text"
@@ -180,7 +324,7 @@ function BarangKeluar() {
                                         No
                                     </th>
                                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                                        ID Permintaan
+                                        KODE
                                     </th>
                                     <th
                                         onClick={() =>
@@ -211,7 +355,7 @@ function BarangKeluar() {
                                         className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase cursor-pointer"
                                     >
                                         <div className="flex items-center">
-                                            Barang{" "}
+                                            Nama Barang{" "}
                                             {sortBy === "barang" && (
                                                 <SortArrow order={sortOrder} />
                                             )}
@@ -260,10 +404,13 @@ function BarangKeluar() {
                                                     trans.permintaan.tanggal_minta
                                                 ).toLocaleDateString("id-ID")}
                                             </td>
-                                            <td className="px-6 py-4 font-medium text-gray-700">
-                                                {trans.permintaan.user.nama}
+                                            <td className="px-6 py-4 text-gray-500">
+                                                {
+                                                    trans.permintaan.user
+                                                        .nama_user
+                                                }
                                             </td>
-                                            <td className="px-6 py-4 font-medium text-gray-700">
+                                            <td className="px-6 py-4 text-gray-500">
                                                 {trans.barang.nama_barang}
                                             </td>
                                             <td className="px-6 py-4 text-red-600 font-bold">
@@ -275,7 +422,70 @@ function BarangKeluar() {
                             </tbody>
                         </table>
                     </div>
-                    {/* Pagination */}
+                    {/* Pagination Footer */}
+                    <div className="flex flex-col sm:flex-row items-center justify-between mt-6 pt-4 border-t border-gray-200">
+                        <span className="text-gray-600 mb-2 sm:mb-0">
+                            Halaman{" "}
+                            <span className="font-semibold">{currentPage}</span>{" "}
+                            dari{" "}
+                            <span className="font-semibold">{totalPages}</span>
+                        </span>
+                        <div className="flex space-x-2">
+                            <button
+                                onClick={() =>
+                                    setCurrentPage((prev) =>
+                                        Math.max(prev - 1, 1)
+                                    )
+                                }
+                                disabled={currentPage === 1 || isLoading}
+                                className={`${basePaginationButtonClass} ${
+                                    currentPage === 1
+                                        ? inactivePaginationButtonClass
+                                        : activePaginationButtonClass
+                                }`}
+                            >
+                                Sebelumnya
+                            </button>
+
+                            {getPageNumbers().map((pageNumber) => (
+                                <button
+                                    key={pageNumber}
+                                    onClick={() => setCurrentPage(pageNumber)}
+                                    disabled={isLoading}
+                                    className={`
+                    ${basePaginationButtonClass}
+                    ${
+                        pageNumber === currentPage
+                            ? activePageNumberClass
+                            : inactivePageNumberClass
+                    }
+                    ${isLoading ? "opacity-50 cursor-not-allowed" : ""}
+                  `}
+                                >
+                                    {pageNumber}
+                                </button>
+                            ))}
+
+                            <button
+                                onClick={() =>
+                                    setCurrentPage((prev) =>
+                                        Math.min(prev + 1, totalPages)
+                                    )
+                                }
+                                disabled={
+                                    currentPage === totalPages || isLoading
+                                }
+                                className={`${basePaginationButtonClass} ${
+                                    currentPage === totalPages
+                                        ? inactivePaginationButtonClass
+                                        : activePaginationButtonClass
+                                }`}
+                            >
+                                Selanjutnya
+                            </button>
+                        </div>
+                    </div>
+                    {/* Pagination Footer */}
                 </div>
             </main>
         </Layout>

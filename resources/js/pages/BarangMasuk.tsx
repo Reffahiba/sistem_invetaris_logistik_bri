@@ -1,13 +1,19 @@
 import React, { useEffect, useState, useRef } from "react";
 import Layout from "@/LayoutAdmin";
 import axios from "axios";
-import { PlusCircle, ChevronDown, ChevronUp } from "lucide-react";
+import {
+    FileText,
+    FileSpreadsheet,
+    ChevronDown,
+    ChevronUp,
+} from "lucide-react";
 import AddBarangMasukModal from "@/components/modal/AddBarangMasukModal";
 import SuccessModal from "@/components/modal/SuccessModal";
 import FailModal from "@/components/modal/FailModal";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import Breadcrumb from "@/components/ui/breadcrumb";
+import ExportPreview from "@/components/exports/ExportPreview";
 
 // Tipe data untuk transaksi
 type TransaksiMasuk = {
@@ -60,6 +66,9 @@ function BarangMasuk() {
     // State untuk filter tanggal
     const [startDate, setStartDate] = useState<Date | null>(null);
     const [endDate, setEndDate] = useState<Date | null>(null);
+
+    const [isPreviewing, setIsPreviewing] = useState(false);
+    const [previewHtml, setPreviewHtml] = useState("");
 
     const fetchData = async () => {
         setIsLoading(true);
@@ -122,6 +131,59 @@ function BarangMasuk() {
         }
     };
 
+    const handlePreview = async () => {
+        setIsLoading(true);
+        setShowExportMenu(false);
+        try {
+            const params = new URLSearchParams({
+                search: search,
+                start_date: startDate
+                    ? startDate.toISOString().split("T")[0]
+                    : "",
+                end_date: endDate ? endDate.toISOString().split("T")[0] : "",
+                sortBy: sortBy,
+                sortOrder: sortOrder,
+            }).toString();
+
+            const response = await axios.get(
+                `/admin/barang-masuk/preview-pdf?${params}`
+            );
+            setPreviewHtml(response.data);
+            setIsPreviewing(true);
+        } catch (error) {
+            console.error("Gagal memuat preview:", error);
+            alert("Gagal memuat pratinjau laporan.");
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const handleActualExportExcel = () => {
+        // Buat URL dengan parameter filter
+        const params = new URLSearchParams({
+            search: search,
+            start_date: startDate ? startDate.toISOString().split("T")[0] : "",
+            end_date: endDate ? endDate.toISOString().split("T")[0] : "",
+            sortBy: sortBy,
+            sortOrder: sortOrder,
+        }).toString();
+
+        // Buka URL di tab baru untuk men-trigger download
+        window.open(`/admin/barang-masuk/export-excel?${params}`, "_blank");
+        setShowExportMenu(false);
+    };
+
+    // 4. Jika isPreviewing true, render halaman preview
+    if (isPreviewing) {
+        return (
+            <ExportPreview
+                htmlContent={previewHtml}
+                onBack={() => setIsPreviewing(false)}
+                onExportExcel={handleActualExportExcel}
+            />
+        );
+    }
+
     // Callback untuk modal sukses dan gagal
     const handleSuccess = (message: string) => {
         fetchData(); // Muat ulang data tabel
@@ -160,7 +222,7 @@ function BarangMasuk() {
 
     // Pagination Disabled & Activated Effect
     const basePaginationButtonClass =
-        "px-3 py-1 rounded-sm font-medium transition duration-150 ease-in-out text-sm";
+        "px-3 py-1 rounded-md font-medium transition duration-150 ease-in-out text-sm";
     const activePaginationButtonClass =
         "bg-blue-600 text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2";
     const inactivePaginationButtonClass =
@@ -186,6 +248,7 @@ function BarangMasuk() {
                             selected={startDate}
                             onChange={(date) => setStartDate(date)}
                             placeholderText="Tanggal Mulai"
+                            isClearable
                             className="border rounded-lg px-3 py-2 w-40"
                         />
                         <span>-</span>
@@ -193,13 +256,14 @@ function BarangMasuk() {
                             selected={endDate}
                             onChange={(date) => setEndDate(date)}
                             placeholderText="Tanggal Akhir"
+                            isClearable
                             className="border rounded-lg px-3 py-2 w-40"
                         />
                     </div>
                     <div className="flex items-center space-x-3 w-full md:w-auto justify-end mt-4 md:mt-0">
                         <button
                             onClick={() => setModalOpen(true)}
-                            className="flex items-center px-4 py-2 bg-primary text-white font-medium rounded-lg shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition duration-200 ease-in-out"
+                            className="flex items-center px-4 py-2 bg-primary text-white font-medium rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition duration-200 ease-in-out"
                         >
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
@@ -223,11 +287,8 @@ function BarangMasuk() {
                                 onClick={() =>
                                     setShowExportMenu(!showExportMenu)
                                 }
-                                className="p-2 bg-gray-200 text-gray-600 rounded-lg shadow-sm hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 transition duration-200 ease-in-out"
-                                aria-expanded={showExportMenu}
-                                aria-haspopup="true"
+                                className="p-2 bg-gray-200 text-gray-600 rounded-lg shadow-md hover:bg-gray-300"
                             >
-                                {/* Ikon titik tiga */}
                                 <svg
                                     xmlns="http://www.w3.org/2000/svg"
                                     className="h-5 w-5"
@@ -237,21 +298,29 @@ function BarangMasuk() {
                                     <path d="M10 6a2 2 0 110-4 2 2 0 010 4zm0 6a2 2 0 110-4 2 2 0 010 4zm0 6a2 2 0 110-4 2 2 0 010 4z" />
                                 </svg>
                             </button>
-
-                            {/* Menu Dropdown Export */}
                             {showExportMenu && (
-                                <div className="absolute right-0 mt-2 w-48 bg-white rounded-sm shadow-lg py-1 ring-1 ring-black ring-opacity-5 focus:outline-none z-10">
+                                <div className="absolute right-0 mt-2 w-52 bg-white rounded-md shadow-lg py-1 ring-1 ring-black ring-opacity-5 z-10">
                                     <button
-                                        className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                        onClick={handlePreview} // Asumsi ini untuk PDF
+                                        className="flex items-center gap-3 w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                                         role="menuitem"
                                     >
-                                        Export sebagai PDF
+                                        <FileText
+                                            size={16}
+                                            className="text-red-500"
+                                        />
+                                        <span>Export PDF</span>
                                     </button>
                                     <button
-                                        className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                        onClick={handleActualExportExcel} // Asumsi ini untuk Excel
+                                        className="flex items-center gap-3 w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                                         role="menuitem"
                                     >
-                                        Export sebagai Excel
+                                        <FileSpreadsheet
+                                            size={16}
+                                            className="text-green-600"
+                                        />
+                                        <span>Export CSV</span>
                                     </button>
                                 </div>
                             )}
@@ -259,7 +328,7 @@ function BarangMasuk() {
                     </div>
                 </div>
 
-                <div className="bg-white p-6 rounded-lg shadow-sm">
+                <div className="bg-white p-6 rounded-lg shadow-md">
                     <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pb-6 border-b border-gray-200 mb-6">
                         <input
                             type="text"
