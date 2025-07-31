@@ -9,7 +9,8 @@ import Permintaan from "@/pages/Permintaan";
 import KelolaAkun from "@/pages/KelolaAkun";
 import DashboardPegawai from "@/DashboardPegawai";
 import AjukanPermintaan from "@/pages/AjukanPermintaan";
-import LacakPermintaan from "./pages/LacakPermintaan";
+import LacakPermintaan from "@/pages/LacakPermintaan";
+import RiwayatPermintaan from "@/pages/RiwayatPermintaan";
 import NotFound from "@/pages/error/404";
 import "/resources/css/app.css";
 
@@ -27,6 +28,7 @@ const lacakPermintaan = document.getElementById("lacakStatus-root");
 const riwayatPermintaan = document.getElementById("riwayatPermintaan-root");
 
 const notFound = document.getElementById("notFound-root");
+
 
 if (dashboard) {
     ReactDOM.createRoot(dashboard).render(
@@ -105,6 +107,14 @@ if (lacakPermintaan) {
     ReactDOM.createRoot(lacakPermintaan).render(
         <React.StrictMode>
             <LacakPermintaan />
+        </React.StrictMode>
+    );
+}
+
+if (riwayatPermintaan) {
+    ReactDOM.createRoot(riwayatPermintaan).render(
+        <React.StrictMode>
+            <RiwayatPermintaan />
         </React.StrictMode>
     );
 }

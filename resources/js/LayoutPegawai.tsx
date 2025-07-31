@@ -1,9 +1,9 @@
 import React from "react";
-import { useEffect, useState } from "react";
-import { Menu } from "lucide-react";
-import { Bell, Search } from "lucide-react";
-import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
 import axios from "axios";
+import { useEffect, useState, useRef } from "react";
+import { Menu, Link } from "lucide-react";
+import { Bell, Search, Settings, UserCircle, LogOutIcon } from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
 import {
     SidebarProvider,
     Sidebar,
@@ -11,17 +11,9 @@ import {
     SidebarGroup,
     SidebarHeader,
     SidebarFooter,
+    SidebarItem,
 } from "@/components/ui/sidebar";
-import {
-    NavigationMenu,
-    NavigationMenuContent,
-    NavigationMenuIndicator,
-    NavigationMenuItem,
-    NavigationMenuLink,
-    NavigationMenuList,
-    NavigationMenuTrigger,
-    NavigationMenuViewport,
-} from "@/components/ui/navigation-menu";
+import { NavigationMenu } from "@/components/ui/navigation-menu";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -30,6 +22,19 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+
+interface Notifikasi {
+    id_permintaan: number;
+    message: string;
+    status: string;
+}
+
+const placeholderTexts: string[] = [
+    "Cari barang yang dibutuhkan...",
+    "Ajukan permintaan barang...",
+    "Lihat permintaan terakhir...",
+    "Filter berdasarkan nama...",
+];
 
 const handleLogout = async () => {
     try {
@@ -60,8 +65,120 @@ const divisi = el?.dataset.divisi || "Divisi";
 const currentPath = window.location.pathname;
 
 const LayoutPegawai = ({ children }) => {
+    const [showProfile, setShowProfile] = useState<boolean>(false);
+    const [showNotifications, setShowNotifications] = useState<boolean>(false);
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
+    const [currentPlaceholderIndex, setCurrentPlaceholderIndex] =
+        useState<number>(0);
+    const [animate, setAnimate] = useState<boolean>(false);
+    const [isFocused, setIsFocused] = useState<boolean>(false);
+
+    const notificationRef = useRef<HTMLDivElement | null>(null);
+    const profileRef = useRef<HTMLDivElement | null>(null);
+
+    const [notifications, setNotifications] = useState<string[]>([]);
+    const [unreadCount, setUnreadCount] = useState<number>(0);
+    const [notifiedIds, setNotifiedIds] = useState<number[]>([]);
+    const [audioEnabled, setAudioEnabled] = useState(false);
+
+    const enableAudio = () => {
+        const audio = new Audio("/audio/notification.mp3");
+        audio
+            .play()
+            .then(() => {
+                setAudioEnabled(true);
+            })
+            .catch((error) => {
+                console.error("Audio play failed", error);
+            });
+    };
+
+    const playNotificationSound = () => {
+        if (!audioEnabled) return;
+        const audio = new Audio("/audio/notification.mp3");
+        audio.play().catch((err) => console.error("Gagal memutar audio", err));
+    };
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setAnimate(true);
+            setTimeout(() => {
+                setCurrentPlaceholderIndex(
+                    (prev) => (prev + 1) % placeholderTexts.length
+                );
+                setAnimate(false);
+            }, 300);
+        }, 3000);
+        return () => clearInterval(interval);
+    }, []);
+
+    useEffect(() => {
+        // Tipe untuk event mouse
+        const handleClickOutside = (event: MouseEvent) => {
+            if (
+                notificationRef.current &&
+                !notificationRef.current.contains(event.target as Node)
+            ) {
+                setShowNotifications(false);
+            }
+            if (
+                profileRef.current &&
+                !profileRef.current.contains(event.target as Node)
+            ) {
+                setShowProfile(false);
+            }
+        };
+        document.addEventListener("mousedown", handleClickOutside);
+        return () =>
+            document.removeEventListener("mousedown", handleClickOutside);
+    });
+
+    useEffect(() => {
+        const fetchNotifications = async () => {
+            try {
+                const response = await axios.get("/notifikasi-permintaan");
+                const data = response.data;
+
+                // Filter status yang ingin diberi notifikasi
+                const newNotifs: Notifikasi[] = data.filter(
+                    (item: Notifikasi) =>
+                        item.status === "sedang diproses" ||
+                        item.status === "sedang diantar"
+                );
+
+                // Cari notifikasi yang ID-nya belum pernah diberi bunyi
+                const newUnseen = newNotifs.filter(
+                    (item: Notifikasi) =>
+                        !notifiedIds.includes(item.id_permintaan)
+                );
+
+                if (newUnseen.length > 0) {
+                    playNotificationSound();
+
+                    // Simpan ID yang sudah diputar suaranya
+                    setNotifiedIds((prev) => [
+                        ...prev,
+                        ...newUnseen.map((n) => n.id_permintaan),
+                    ]);
+
+                    // Update unread count dan tampilan
+                    setUnreadCount(newUnseen.length);
+                    setNotifications((prev) => [
+                        ...newUnseen.map((n) => n.message),
+                        ...prev,
+                    ]);
+                }
+            } catch (error) {
+                console.error("Error fetching notifications", error);
+            }
+        };
+
+        const interval = setInterval(fetchNotifications, 10000); // 10 detik
+        fetchNotifications(); // run once on mount
+
+        return () => clearInterval(interval);
+    }, [notifiedIds]);
 
     return (
         <div className="flex">
@@ -69,106 +186,38 @@ const LayoutPegawai = ({ children }) => {
                 <div className="hidden md:flex h-screen">
                     <Sidebar collapsible="none" className="h-full">
                         <SidebarHeader>
-                            <h1 className="text-xl font-bold pt-1">Logo App</h1>
-                            <h1 className="text-lg font-semibold text-blue-600">
-                                BRI<span className="text-orange-400">Log</span>
-                            </h1>
+                            <img src="/assets/Logo Brilog.png" alt="logo" className="w-40 h-20" />
                         </SidebarHeader>
                         <SidebarContent>
                             <SidebarGroup>
-                                <div
-                                    className={`flex items-center space-x-3 p-2 m-1 rounded-l-lg ${
-                                        currentPath === "/dashboard"
-                                            ? "bg-blue-100  text-blue-600 font-semibold "
-                                            : "hover:bg-gray-200 transition-colors duration-300 ease-in-out"
-                                    }`}
-                                >
-                                    <img
-                                        src={
-                                            currentPath === "/dashboard"
-                                                ? "/assets/chart-2-blue.png"
-                                                : "/assets/chart-2.png"
-                                        }
-                                        alt="User Icon"
-                                        className="w-5 h-5 ml-3"
-                                    ></img>
-                                    <a
-                                        href="/dashboard"
-                                        className="p-1 rounded text-sm pl-3 font-nunito"
-                                    >
-                                        Dashboard
-                                    </a>
-                                </div>
-                                <div
-                                    className={`flex items-center space-x-3 p-2 m-1 rounded-l-lg ${
-                                        currentPath === "/ajukan-permintaan"
-                                            ? "bg-blue-100  text-blue-600 font-semibold "
-                                            : "hover:bg-gray-200 transition-colors duration-300 ease-in-out"
-                                    }`}
-                                >
-                                    <img
-                                        src={
-                                            currentPath === "/ajukan-permintaan"
-                                                ? "/assets/box-blue.png"
-                                                : "/assets/box.png"
-                                        }
-                                        alt="User Icon"
-                                        className="w-5 h-5 ml-3"
-                                    ></img>
-                                    <a
-                                        href="/ajukan-permintaan"
-                                        className="p-1 rounded text-sm pl-3"
-                                    >
-                                        Ajukan Permintaan
-                                    </a>
-                                </div>
-                                <div
-                                    className={`flex items-center space-x-3 p-2 m-1 rounded-l-lg ${
-                                        currentPath === "/lacak-permintaan"
-                                            ? "bg-blue-100  text-blue-600 font-semibold "
-                                            : "hover:bg-gray-200 transition-colors duration-300 ease-in-out"
-                                    }`}
-                                >
-                                    <img
-                                        src={
-                                            currentPath === "/lacak-permintaan"
-                                                ? "/assets/search-status-blue.png"
-                                                : "/assets/search-status.png"
-                                        }
-                                        alt="User Icon"
-                                        className="w-5 h-5 ml-3"
-                                    ></img>
-                                    <a
-                                        href="/lacak-permintaan"
-                                        className="p-1 rounded text-sm pl-3"
-                                    >
-                                        Lacak Permintaan
-                                    </a>
-                                </div>
-                                <div
-                                    className={`flex items-center space-x-3 p-2 m-1 rounded-l-lg ${
-                                        currentPath === "/riwayat-permintaan"
-                                            ? "bg-blue-100  text-blue-600 font-semibold "
-                                            : "hover:bg-gray-200 transition-colors duration-300 ease-in-out"
-                                    }`}
-                                >
-                                    <img
-                                        src={
-                                            currentPath ===
-                                            "/riwayat-permintaan"
-                                                ? "/assets/people-blue.png"
-                                                : "/assets/people.png"
-                                        }
-                                        alt="User Icon"
-                                        className="w-5 h-5 ml-3"
-                                    ></img>
-                                    <a
-                                        href="/riwayat-permintaan"
-                                        className="p-1 rounded text-sm pl-3"
-                                    >
-                                        Riwayat Permintaan
-                                    </a>
-                                </div>
+                                <SidebarItem
+                                    href="/dashboard"
+                                    icon="/assets/chart-2.png"
+                                    activeIcon="/assets/chart-2-blue.png"
+                                    currentPath={currentPath}
+                                    label="Dashboard"
+                                />
+                                <SidebarItem
+                                    href="/ajukan-permintaan"
+                                    icon="/assets/box-add.png"
+                                    activeIcon="/assets/box-add-blue.png"
+                                    currentPath={currentPath}
+                                    label="Ajukan Permintaan"
+                                />
+                                <SidebarItem
+                                    href="/lacak-permintaan"
+                                    icon="/assets/search-status.png"
+                                    activeIcon="/assets/search-status-blue.png"
+                                    currentPath={currentPath}
+                                    label="Lacak Permintaan"
+                                />
+                                <SidebarItem
+                                    href="/riwayat-permintaan"
+                                    icon="/assets/archive-tick.png"
+                                    activeIcon="/assets/archive-tick-blue.png"
+                                    currentPath={currentPath}
+                                    label="Riwayat Permintaan"
+                                />
                             </SidebarGroup>
                         </SidebarContent>
                         <SidebarFooter>
@@ -192,24 +241,34 @@ const LayoutPegawai = ({ children }) => {
                             <button onClick={toggleSidebar}>&times;</button>
                         </div>
                         <div className="space-y-3">
-                            <a
-                                href="/admin-dashboard"
-                                className="block p-2 rounded hover:bg-gray-100"
-                            >
-                                Dashboard
-                            </a>
-                            <a
-                                href="/admin-data-barang"
-                                className="block p-2 rounded hover:bg-gray-100"
-                            >
-                                Data Barang
-                            </a>
-                            <a
-                                href="/admin-permintaan"
-                                className="block p-2 rounded hover:bg-gray-100"
-                            >
-                                Permintaan
-                            </a>
+                            <SidebarItem
+                                href="/dashboard"
+                                icon="/assets/chart-2.png"
+                                activeIcon="/assets/chart-2-blue.png"
+                                currentPath={currentPath}
+                                label="Dashboard"
+                            />
+                            <SidebarItem
+                                href="/ajukan-permintaan"
+                                icon="/assets/box-add.png"
+                                activeIcon="/assets/box-add-blue.png"
+                                currentPath={currentPath}
+                                label="Ajukan Permintaan"
+                            />
+                            <SidebarItem
+                                href="/lacak-permintaan"
+                                icon="/assets/search-status.png"
+                                activeIcon="/assets/search-status-blue.png"
+                                currentPath={currentPath}
+                                label="Lacak Permintaan"
+                            />
+                            <SidebarItem
+                                href="/riwayat-permintaan"
+                                icon="/assets/archive-tick.png"
+                                activeIcon="/assets/archive-tick-blue.png"
+                                currentPath={currentPath}
+                                label="Riwayat Permintaan"
+                            />
                             <a
                                 href="/pengaturan"
                                 className="block p-2 rounded hover:bg-gray-100"
@@ -235,87 +294,111 @@ const LayoutPegawai = ({ children }) => {
                         <div className="relative w-full">
                             <input
                                 type="text"
-                                placeholder="Search..."
                                 className="w-full rounded-full border px-3 py-2 pl-10 text-sm outline-none focus:outline-none focus:ring-1 focus:ring-gray-200"
+                                onFocus={() => setIsFocused(true)}
+                                onBlur={() => setIsFocused(false)}
                             />
                             <Search className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
+
+                            {/* Placeholder animasi */}
+                            <span
+                                className={`
+                                    absolute left-10 top-1/2 transform -translate-y-1/2 text-sm text-gray-400
+                                    pointer-events-none transition-all duration-200
+                                    ${
+                                        isFocused || animate
+                                            ? "opacity-0 -translate-y-2"
+                                            : "opacity-100"
+                                    }
+                            `}
+                            >
+                                {placeholderTexts[currentPlaceholderIndex]}
+                            </span>
                         </div>
                     </div>
-
-                    {/* <div className="flex justify-center flex-1">
-                        <NavigationMenuList className="flex gap-4">
-                            <NavigationMenuItem>
-                                <NavigationMenuTrigger>
-                                </NavigationMenuTrigger>
-                                <NavigationMenuContent>
-                                    <NavigationMenuLink>
-                                    </NavigationMenuLink>
-                                </NavigationMenuContent>
-                            </NavigationMenuItem>
-                        </NavigationMenuList>
-                    </div> */}
 
                     <div className="flex items-center gap-4 justify-end flex-1 max-w-xs">
                         {/* Notifikasi Dropdown */}
                         <DropdownMenu>
-                            <DropdownMenuTrigger className="focus:outline-none">
-                                <Bell className="h-6 w-6 text-gray-600 cursor-pointer hover:text-sky-500" />
+                            <DropdownMenuTrigger className="relative focus:outline-none">
+                                <Bell className="h-5 w-5 text-gray-500 cursor-pointer hover:text-sky-500" />
+                                {unreadCount > 0 && (
+                                    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full px-1.5 h-5 min-w-[20px] flex items-center justify-center animate-pulse">
+                                        {unreadCount}
+                                    </span>
+                                )}
                             </DropdownMenuTrigger>
                             <DropdownMenuContent className="w-64">
                                 <DropdownMenuLabel>
                                     Notifikasi Terbaru
                                 </DropdownMenuLabel>
                                 <DropdownMenuSeparator />
-                                <DropdownMenuItem>
-                                    Barang masuk hari ini
-                                </DropdownMenuItem>
-                                <DropdownMenuItem>
-                                    Permintaan persetujuan pengadaan
-                                </DropdownMenuItem>
-                                <DropdownMenuItem>
-                                    Stok barang hampir habis
-                                </DropdownMenuItem>
+                                {notifications.length > 0 ? (
+                                    notifications.map((notif, idx) => (
+                                        <DropdownMenuItem key={idx}>
+                                            {notif}
+                                        </DropdownMenuItem>
+                                    ))
+                                ) : (
+                                    <DropdownMenuItem className="text-gray-400">
+                                        Tidak ada notifikasi
+                                    </DropdownMenuItem>
+                                )}
                             </DropdownMenuContent>
                         </DropdownMenu>
 
                         {/* Profil Dropdown */}
-                        <div className="rounded-full overflow-hidden w-7 h-7">
-                            <Avatar className="w-full h-full">
-                                <AvatarImage
-                                    src="/assets/user.png"
-                                    alt="User"
+                        <div className="rounded-full overflow-hidden w-8 h-8 object-cover">
+                            <div className="w-full h-full">
+                                <img
+                                    src="/assets/default_avatar.png"
+                                    alt="User Avatar"
                                 />
-                                <AvatarFallback>UN</AvatarFallback>
-                            </Avatar>
+                            </div>
                         </div>
                         <div className="hidden sm:flex flex-col text-start">
                             <p className="text-sm font-semibold truncate">
                                 {nama}
                             </p>
-                            <p className="text-sm font-normal truncate">
-                                {" "}
-                                {divisi}{" "}
+                            <p className="text-xs font-normal truncate">
+                                {divisi}
                             </p>
                         </div>
-                        <DropdownMenu>
+                        <DropdownMenu
+                            onOpenChange={(open) => setShowProfile(open)}
+                        >
                             <DropdownMenuTrigger className="focus:outline-none">
-                                <div className="rounded-full overflow-hidden w-7 h-7 cursor-pointer">
-                                    <Avatar className="w-full h-full">
-                                        <AvatarImage
+                                <div className="rounded-full overflow-hidden w-4 h-4 cursor-pointer">
+                                    <div className="w-full h-full">
+                                        <img
                                             src="/assets/arrow-circle-down.png"
                                             alt="User"
+                                            className={`transition-transform duration-300 ${
+                                                showProfile ? "rotate-180" : ""
+                                            }`}
                                         />
-                                        <AvatarFallback>UN</AvatarFallback>
-                                    </Avatar>
+                                    </div>
                                 </div>
                             </DropdownMenuTrigger>
-                            <DropdownMenuContent className="w-40">
-                                <DropdownMenuLabel>Profil</DropdownMenuLabel>
+                            <DropdownMenuContent className="w-43 mr-3">
+                                <DropdownMenuLabel>
+                                    {nama} <br />
+                                    <span className="text-xs font-normal">
+                                        {nama.toLowerCase().replace(" ", "")}
+                                        @bri.corp.id
+                                    </span>
+                                </DropdownMenuLabel>
                                 <DropdownMenuSeparator />
-                                <DropdownMenuItem>
-                                    <a href="/profile">Lihat Profil</a>
+                                <DropdownMenuItem className="flex items-center text-xs gap-2 px-4 py-2 hover:bg-gray-50 cursor-pointer">
+                                    <UserCircle />
+                                    <a href="/profile">Edit profil</a>
                                 </DropdownMenuItem>
-                                <DropdownMenuItem>
+                                <DropdownMenuItem className="flex items-center text-xs gap-2 px-4 py-2 hover:bg-gray-50 cursor-pointer">
+                                    <Settings />
+                                    <a href="/profile">Pengaturan</a>
+                                </DropdownMenuItem>
+                                <DropdownMenuItem className="flex items-center text-xs gap-2 px-4 py-2 hover:bg-gray-50 cursor-pointer">
+                                    <LogOutIcon className="text-red-500" />
                                     <form method="POST" action="/logout">
                                         <input
                                             type="hidden"
@@ -331,9 +414,9 @@ const LayoutPegawai = ({ children }) => {
                                         />
                                         <button
                                             type="submit"
-                                            className="w-full text-left"
+                                            className="w-full text-left text-red-500 font-semibold"
                                         >
-                                            Logout Pegawai
+                                            Keluar
                                         </button>
                                     </form>
                                 </DropdownMenuItem>

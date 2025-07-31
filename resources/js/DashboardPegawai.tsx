@@ -31,19 +31,19 @@ function DashboardPegawai() {
         {
             title: "Ajukan permintaan logistik",
             subtitle: "cepat, praktis, tinggal klik!",
-            href: "/pengajuan_barang",
+            href: "/ajukan-permintaan",
             buttonText: "Mulai Ajukan",
         },
         {
             title: "Lacak status permintaan barang",
             subtitle: "mudah, cepat, tanpa ribet!",
-            href: "/admin_data_barang",
+            href: "/lacak-permintaan",
             buttonText: "Lacak Status",
         },
         {
             title: "Tinjau kembali permintaan",
             subtitle: "yang telah diantarakan!",
-            href: "/admin_data_barang",
+            href: "/riwayat-permintaan",
             buttonText: "Lihat Riwayat",
         },
     ];
@@ -80,16 +80,16 @@ function DashboardPegawai() {
                 setCurrent((prev) => (prev + 1) % slides.length);
             } else {
                 api.scrollTo(0);
-                setCurrent(0); 
+                setCurrent(0); // Kembali ke slide pertama
             }
-        }, 6000); 
+        }, 4000); //
 
         return () => clearInterval(interval);
     }, [api]);
 
     return (
         <LayoutPegawai>
-            <main className="flex-1 overflow-auto">
+            <main className="flex-1 overflow-x-hidden">
                 <Carousel className="w-full max-w-full mx-auto" setApi={setApi}>
                     <CarouselContent>
                         {slides.map((slide, index) => (
@@ -98,7 +98,7 @@ function DashboardPegawai() {
                                 className="bg-carousel-bg bg-cover bg-center rounded-xl items-left pl-5 py-2 flex flex-col"
                             >
                                 <div className="flex justify-between">
-                                    <div className="flex flex-col ml-5 mt-3 gap-4">
+                                    <div className="flex flex-col ml-3 mt-2 gap-4">
                                         <div className="text-white p-3 text-4xl font-semibold text-left">
                                             {slide.title}
                                             <br />
@@ -106,9 +106,9 @@ function DashboardPegawai() {
                                                 {slide.subtitle}
                                             </span>
                                         </div>
-                                        <div className="flex items-end justify-start p-3">
+                                        <div className="flex items-end justify-start p-2">
                                             <a href={slide.href}>
-                                                <button className="bg-gradient-to-r from-orange-600 via-orange-500 to-orange-600 text-white text-md py-2 px-3 rounded-xl mt-2 font-semibold border-b-orange-700 flex items-center gap-2">
+                                                <button className="bg-gradient-to-r from-orange-600 via-orange-500 to-orange-600 text-white text-sm py-2 px-3 rounded-xl mt-2 font-semibold border-b-orange-700 flex items-center gap-2">
                                                     {slide.buttonText}
                                                     <img
                                                         src="/assets/arrow-right.png"
@@ -119,20 +119,6 @@ function DashboardPegawai() {
                                             </a>
                                         </div>
                                     </div>
-
-                                    {/* Optional gambar di kanan */}
-                                    {/* <div className="relative h-full w-48 mr-20 mt-3">
-                                        <img
-                                            src="/assets/desain.png"
-                                            alt="gambar"
-                                            className="h-full w-full object-contain"
-                                        />
-                                        <img
-                                            src="/assets/pngwing 1.png"
-                                            alt="gambar"
-                                            className="absolute top-1 left-[-18px] h-full object-contain z-10 scale-125"
-                                        />
-                                    </div> */}
                                 </div>
                             </CarouselItem>
                         ))}
@@ -184,39 +170,39 @@ function DashboardPegawai() {
                             bg: "bg-red-400",
                         },
                         {
-                            label: "Diproses",
+                            label: "Sedang Diproses",
                             key: "diproses",
                             color: "text-yellow-400",
                             image: "/assets/refresh-square-2.png",
                             bg: "bg-yellow-400",
                         },
                         {
-                            label: "Diantar",
+                            label: "Sedang Diantar",
                             key: "diantar",
                             color: "text-blue-400",
                             image: "/assets/send-sqaure-2.png",
                             bg: "bg-blue-400",
                         },
                         {
-                            label: "Diterima",
+                            label: "Telah Diterima",
                             key: "diterima",
                             color: "text-green-400",
                             image: "/assets/tick-square.png",
                             bg: "bg-green-400",
                         },
                     ].map((item, idx) => (
-                        <Card key={idx} className="shadow-md">
-                            <CardContent className="py-6">
+                        <Card key={idx} className="shadow-sm">
+                            <CardContent className="p-4">
                                 <div className="flex justify-between">
                                     <h3
-                                        className={`text-md font-semibold ${item.color}`}
+                                        className={`text-sm font-semibold ${item.color}`}
                                     >
                                         {item.label}
                                     </h3>
                                     <img
                                         src={item.image}
                                         alt="menunggu"
-                                        className={`w-12 h-12 p-2 rounded-full ${item.bg}`}
+                                        className={`w-9 h-9 p-2 rounded-full ${item.bg}`}
                                     />
                                 </div>
                                 <p className="text-3xl font-bold mt-1">
@@ -224,15 +210,13 @@ function DashboardPegawai() {
                                 </p>
                                 <div className="w-full bg-gray-200 h-2 mt-4 rounded-full overflow-hidden">
                                     <div
-                                        className="h-full bg-opacity-80 rounded-full transition-all"
+                                        className={`h-full rounded-full transition-all ${item.bg}`}
                                         style={{
                                             width: `${
                                                 persen[
                                                     item.key as keyof typeof persen
                                                 ]
                                             }%`,
-                                            backgroundColor: "currentColor",
-                                            color: "inherit",
                                         }}
                                     />
                                 </div>

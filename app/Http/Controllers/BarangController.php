@@ -85,7 +85,7 @@ class BarangController extends Controller
             $gambarPath = Storage::url($gambarPath);
         } 
 
-        $userId = 1;
+        $userId = Auth::id();
 
         // 3. Buat Entri Barang di Database
         $barang = Barang::create([

@@ -3,12 +3,17 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AdminFiturController;
 use App\Http\Controllers\AdminLoginController;
+use App\Http\Controllers\AjukanPermintaanController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\BarangController;
 use App\Http\Controllers\KategoriController;
 use App\Http\Controllers\StokController;
 use App\Http\Controllers\PegawaiFiturController;
 use App\Http\Controllers\PegawaiLoginController;
+use App\Http\Controllers\DashboardPegawaiController;
+use App\Http\Controllers\RiwayatPermintaanController;
+use App\Http\Controllers\LacakPermintaanController;
+use App\Http\Controllers\PermintaanController;
 
 /*
 |--------------------------------------------------------------------------
@@ -29,8 +34,9 @@ Route::middleware(['auth:admin', 'prevent.back.history'])->group(function () {
     Route::get('/admin/data-kategori', [KategoriController::class, 'kelolaKategori'])->name('admin-kategori');
     Route::get('/admin/barang-masuk', [StokController::class, 'kelolaBarangMasuk'])->name('admin-barang-masuk');
     Route::get('/admin/barang-keluar', [StokController::class, 'kelolaBarangKeluar'])->name('admin-barang-keluar');
-    Route::get('/admin-permintaan', [AdminFiturController::class, 'kelolaPermintaan'])->name('admin-permintaan');
-    Route::get('/admin-kelola-akun', [AdminFiturController::class, 'kelolaAkun'])->name('admin-kelola-akun');
+    Route::get('/admin/permintaan', [PermintaanController::class, 'kelolaPermintaan'])->name('admin-permintaan');
+    Route::get('/admin/kelola-akun', [AdminFiturController::class, 'kelolaAkun'])->name('admin-kelola-akun');
+    Route::patch('/admin/update-status/{id}', [PermintaanController::class, 'updateStatus'])->name('admin-update-status');
 
     Route::post('/admin-tambah-akun', [AdminFiturController::class, 'admin_tambah_akun'])->name('admin_tambah_akun');
     Route::put('/admin-edit-akun/{id}', [AdminFiturController::class, 'admin_edit_akun'])->name('admin_edit_akun');
@@ -67,6 +73,7 @@ Route::middleware(['auth:admin'])->prefix('api/admin')->group(function () {
     Route::get('/barang-masuk/code-generate', [StokController::class, 'getNewTransactionCode']);
 
     Route::get('/barang-keluar', [StokController::class, 'getBarangKeluar'])->name('api_barang_keluar');
+
 });
 
 // Login dan register admin (tidak perlu middleware karena belum login)
@@ -78,9 +85,13 @@ Route::post('/admin-logout', [AdminLoginController::class, 'admin_logout'])->nam
 
 // ---------------- Pegawai ----------------
 Route::middleware(['auth:pegawai'])->group(function () {
-    Route::get('/dashboard', [PegawaiFiturController::class, 'dashboard'])->name('dashbord');
-    Route::get('/ajukan-permintaan', [PegawaiFiturController::class, 'ajukan_permintaan'])->name('ajukan_permintaan');
-    Route::get('/lacak-permintaan', [PegawaiFiturController::class, 'lacak_permintaan'])->name('lacak_permintaan'); 
+    Route::get('/dashboard', [DashboardPegawaiController::class, 'dashboard'])->name('dashbord');
+    Route::get('/ajukan-permintaan', [AjukanPermintaanController::class, 'ajukan_permintaan'])->name('ajukan_permintaan');
+    Route::post('/simpan-permintaan', [AjukanPermintaanController::class, 'simpan_permintaan'])->name("simpan_permintaan");
+    Route::get('/lacak-permintaan', [LacakPermintaanController::class, 'lacak_permintaan'])->name('lacak_permintaan');
+    Route::patch('/lacak-permintaan/{id}', [LacakPermintaanController::class, 'update_status_permintaan'])->name('update_status_permintaan');
+    Route::get('/riwayat-permintaan', [RiwayatPermintaanController::class, 'riwayat_permintaan'])->name('riwayat_permintaan');
+    Route::get('/notifikasi-permintaan', [PermintaanController::class, 'getNotifikasi'])->name('notifikasi');
 });
 
 // Login pegawai (tanpa middleware)

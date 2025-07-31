@@ -12,14 +12,15 @@ class Permintaan extends Model
 
     protected $primaryKey = 'id_permintaan';
     protected $table = 'permintaan';
+    protected $guarded = ['id_permintaan'];
     protected $fillable = ['tanggal_minta', 'status', 'id_user'];
 
-    public function user(){
+    public function akun_pengguna(){
         return $this->belongsTo(AkunPengguna::class, 'id_user', 'id_user');
     }
 
     public function detailPermintaan(){
-        return $this->hasMany(Permintaan::class, 'id_permintaan');
+        return $this->hasMany(Permintaan::class, 'id_permintaan', 'id_permintaan');
     }
 
     public function getPermintaan(){
