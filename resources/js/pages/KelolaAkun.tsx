@@ -109,14 +109,14 @@ const KelolaAkun = () => {
             }
 
             if (editingId) {
-                await axios.put(`/admin_edit_akun/${editingId}`, payload);
-                window.location.href = "/admin_kelola_akun";
+                await axios.put(`/admin-edit-akun/${editingId}`, payload);
+                window.location.href = "/admin-kelola-akun";
             } else {
                 await axios
-                    .post("/admin_tambah_akun", payload)
+                    .post("/admin-tambah-akun", payload)
                     .then((response) => {
                         alert(response.data.message);
-                        window.location.href = "/admin_kelola_akun";
+                        window.location.href = "/admin-kelola-akun";
                     })
                     .catch((error) => {
                         console.error(error);
@@ -253,7 +253,7 @@ const KelolaAkun = () => {
             {/* Modal */}
             {showModal && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-                    <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
+                    <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-sm">
                         <h3 className="text-lg font-semibold mb-4">
                             {editingId ? "Edit Akun" : "Tambah Akun"}
                         </h3>

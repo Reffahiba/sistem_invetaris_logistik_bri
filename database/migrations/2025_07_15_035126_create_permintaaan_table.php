@@ -14,9 +14,9 @@ return new class extends Migration
         Schema::create('permintaan', function (Blueprint $table) {
             $table->id('id_permintaan');
             $table->date('tanggal_minta');
-            $table->enum('status', ['menunggu', 'sedang diproses', 'sedang diantar', 'telah diterima'])->default('menunggu');
+            $table->enum('status', ['menunggu', 'ditolak', 'sedang diproses', 'sedang diantar', 'telah diterima'])->default('menunggu');
             $table->unsignedBigInteger('id_user');
-            $table->foreign('id_user')->references('id_user')->on('akun_pengguna')->onDelete('cascade'); 
+            $table->foreign('id_user')->references('id_user')->on('akun_pengguna')->onDelete('restrict'); 
             $table->timestamps();
         });
     }

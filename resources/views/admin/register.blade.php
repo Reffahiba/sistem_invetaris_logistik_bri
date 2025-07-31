@@ -7,7 +7,7 @@
     </div>
 
     <div class="w-1/2 flex flex-col justify-center px-16 bg-white">
-        <div class="w-full max-w-md mx-auto space-y-6">
+        <div class="w-full max-w-sm mx-auto space-y-6">
             <div>
                 <h1 class="text-3xl font-semibold text-gray-800">
                     Welcome Back! <span class="inline-block">👋</span>
@@ -100,7 +100,7 @@
                 {{-- Button --}}
                 <button
                     type="submit"
-                    class="w-full mt-4 rounded-md text-white px-4 py-2 shadow-md transition duration-300 
+                    class="w-full mt-4 rounded-sm text-white px-4 py-2 shadow-sm transition duration-300 
                     [background:radial-gradient(circle_at_center,#F46F23,#d35400)] 
                     hover:shadow-orange-400/70 hover:shadow-lg 
                     focus:outline-none focus:ring-2 focus:ring-orange-400 focus:ring-opacity-60 font-semibold"

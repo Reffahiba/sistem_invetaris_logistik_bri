@@ -31,7 +31,7 @@
     </div>
 
     <div class="w-1/2 flex flex-col justify-center px-16 bg-white">
-        <div class="w-full max-w-md mx-auto space-y-6">
+        <div class="w-full max-w-sm mx-auto space-y-6">
             <div>
                 <h1 class="text-3xl font-semibold text-gray-800">
                     Selamat Datang! <span class="inline-block">👋</span>
