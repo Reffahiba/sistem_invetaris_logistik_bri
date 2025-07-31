@@ -14,6 +14,7 @@ use App\Http\Controllers\DashboardPegawaiController;
 use App\Http\Controllers\RiwayatPermintaanController;
 use App\Http\Controllers\LacakPermintaanController;
 use App\Http\Controllers\PermintaanController;
+use App\Http\Controllers\NotifikasiController;
 
 /*
 |--------------------------------------------------------------------------
@@ -50,6 +51,7 @@ Route::middleware(['auth:admin', 'prevent.back.history'])->group(function () {
         ->name('admin.barang-keluar.preview-pdf');
     Route::get('admin/barang-keluar/export-excel', [StokController::class, 'exportBarangKeluarExcel'])
         ->name('admin.barang-keluar.export-excel');
+
 });
 
 
@@ -73,6 +75,10 @@ Route::middleware(['auth:admin'])->prefix('api/admin')->group(function () {
     Route::get('/barang-masuk/code-generate', [StokController::class, 'getNewTransactionCode']);
 
     Route::get('/barang-keluar', [StokController::class, 'getBarangKeluar'])->name('api_barang_keluar');
+
+    Route::get('/notifications/unread', [NotifikasiController::class, 'getUnread']);
+    Route::post('/notifications/{id}/read', [NotifikasiController::class, 'markAsRead']);
+    Route::post('/notifications/read-all', [NotifikasiController::class, 'markAllAsRead']);
 
 });
 
