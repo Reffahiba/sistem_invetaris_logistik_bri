@@ -27,11 +27,16 @@ trait LogsActivity
 
     protected static function logActivity($model, $activity)
     {
-        LogActivity::create([
-            'id_user' => Auth::id(),
-            'activity' => $activity,
-            'description' => static::getLogDescription($model, $activity),
-        ]);
+        $user = Auth::user();
+
+        // Hanya log jika user login dan memiliki id_role = 1 (admin)
+        if ($user && $user->id_role == 1) {
+            LogActivity::create([
+                'id_user' => $user->id_user,
+                'activity' => $activity,
+                'description' => static::getLogDescription($model, $activity),
+            ]);
+        }
     }
 
     // Fungsi untuk membuat deskripsi log yang dinamis

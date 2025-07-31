@@ -9,6 +9,8 @@ use App\Models\Barang;
 use App\Models\Divisi;
 use App\Models\Permintaan;
 use App\Models\DetailPermintaan;
+use App\Models\AkunPengguna;
+use App\Models\Notifikasi;
 
 class AjukanPermintaanController extends Controller
 {
@@ -97,10 +99,23 @@ class AjukanPermintaanController extends Controller
                 'id_barang' => $id_barang,
                 'jumlah_minta' => $jumlah_minta,
             ]);
+            
 
             // Kurangi stok
             $barang->stok -= $jumlah_minta;
             $barang->save();
+
+            // NOTIFIKASI KE ADMIN
+            $admins = AkunPengguna::where('id_role', 1)->get(); 
+            $peminta = $user->nama_user;
+
+            foreach ($admins as $admin) {
+                Notifikasi::create([
+                    'id_user' => $admin->id_user,
+                    'pesan' => "Permintaan barang baru #{$permintaan->id_permintaan} dari {$peminta}",
+                    'link' => '/admin/permintaan',
+                ]);
+            }
 
             DB::commit(); // Commit transaksi jika semua berhasil
 

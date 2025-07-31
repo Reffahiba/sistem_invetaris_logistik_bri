@@ -2,6 +2,8 @@ import React, { useEffect, useRef, useState } from 'react';
 import {
   Menu, Bell, Search, ChevronDownCircle, Settings, Info, UserCircle, LogOutIcon,
 } from 'lucide-react';
+import axios from 'axios';
+import NotificationDropdown, { Notification } from './NotificationDropdown';
 import LogoutConfirmationModal from '@/components/modal/LogoutConfirmationModal';
 
 const placeholderTexts: string[] = [
@@ -25,10 +27,37 @@ const Topbar: React.FC<TopbarProps> = ({ onToggleSidebar, userName, userRole, on
   const [animate, setAnimate] = useState<boolean>(false);
   const [isFocused, setIsFocused] = useState<boolean>(false);
   const [showNotifications, setShowNotifications] = useState<boolean>(false);
-  
+  const [notifications, setNotifications] = useState<Notification[]>([]);
   const [isLogoutModalOpen, setLogoutModalOpen] = useState<boolean>(false);
   const notificationRef = useRef<HTMLDivElement | null>(null);
   const profileRef = useRef<HTMLDivElement | null>(null);
+
+  const fetchNotifications = () => {
+    axios.get('/api/admin/notifications/unread')
+      .then(res => setNotifications(res.data))
+      .catch(err => console.error("Gagal fetch notifikasi:", err));
+  };
+
+  useEffect(() => {
+    fetchNotifications();
+    const interval = setInterval(fetchNotifications, 30000); // Polling setiap 30 detik
+    return () => clearInterval(interval);
+  }, []);
+
+  const handleMarkAsRead = (id: number) => {
+    axios.post(`/api/admin/notifications/${id}/read`)
+      .then(() => {
+        // Hapus notifikasi dari state agar langsung hilang dari UI
+        setNotifications(prev => prev.filter(n => n.id_notifikasi !== id));
+      });
+  };
+
+  const handleMarkAllAsRead = () => {
+    axios.post('/api/admin/notifications/read-all')
+      .then(() => {
+        setNotifications([]); // Kosongkan state notifikasi
+      });
+  };
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -94,26 +123,27 @@ const Topbar: React.FC<TopbarProps> = ({ onToggleSidebar, userName, userRole, on
 
       {/* Notification + Profile */}
       <div className="flex items-center gap-4">
-        {/* Notifikasi */}
-        <div className="relative" ref={notificationRef}>
-          <button onClick={() => setShowNotifications(!showNotifications)} className="relative focus:outline-none" aria-label="Notifications">
-            <Bell className="mt-2 w-5 h-5 text-gray-500" />
-            <span className="absolute -top-1 mt-2 -right-1 flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
-            </span>
-          </button>
-          {showNotifications && (
-            <div className="absolute right-0 mt-2 w-80 bg-white border border-gray-200 rounded-md shadow-lg z-50">
-              <div className="px-4 py-3 border-b font-medium text-gray-800">Notifikasi</div>
-              <ul className="max-h-64 overflow-y-auto text-sm text-gray-700">
-                <li className="px-4 py-2 hover:bg-gray-50 cursor-pointer">Permintaan barang baru dari Budi</li>
-                <li className="px-4 py-2 hover:bg-gray-50 cursor-pointer">Persetujuan pengadaan diterima</li>
-              </ul>
-            </div>
-          )}
+        {/* Notification + Profile */}
+        <div className="flex items-center gap-4">
+          <div className="relative" ref={notificationRef}>
+            <button onClick={() => setShowNotifications(!showNotifications)} className="relative focus:outline-none" aria-label="Notifications">
+              <Bell className="mt-2 w-5 h-5 text-gray-500" />
+              {notifications.length > 0 && (
+                <span className="absolute -top-1 mt-2 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-white text-xs">
+                  {notifications.length}
+                </span>
+              )}
+            </button>
+            {showNotifications && (
+              <NotificationDropdown 
+                notifications={notifications}
+                onMarkAsRead={handleMarkAsRead}
+                onMarkAllAsRead={handleMarkAllAsRead}
+              />
+            )}
+          </div>
         </div>
-
+            
         {/* Profile */}
         <div className="relative" ref={profileRef}>
           <button onClick={() => setShowProfile(!showProfile)} className="flex items-center gap-3 focus:outline-none">

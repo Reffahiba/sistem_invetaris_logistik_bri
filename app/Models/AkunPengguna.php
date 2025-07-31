@@ -3,10 +3,8 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Notifications\RoutesNotifications;
 
 class AkunPengguna extends Authenticatable
 {
@@ -35,4 +33,11 @@ class AkunPengguna extends Authenticatable
             return $this->select('user.nama_user')->where('user.id', $id_user)->first();
         }
     }
+
+    public function notifications()
+    {
+        return $this->hasMany(Notifikasi::class, 'id_user', 'id_user');
+    }
+    
+
 }
