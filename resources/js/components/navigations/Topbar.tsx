@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import {
   Menu, Bell, Search, ChevronDownCircle, Settings, Info, UserCircle, LogOutIcon,
 } from 'lucide-react';
+import LogoutConfirmationModal from '@/components/modal/LogoutConfirmationModal';
 
 const placeholderTexts: string[] = [
   'Cari barang yang dibutuhkan...',
@@ -25,7 +26,7 @@ const Topbar: React.FC<TopbarProps> = ({ onToggleSidebar, userName, userRole, on
   const [isFocused, setIsFocused] = useState<boolean>(false);
   const [showNotifications, setShowNotifications] = useState<boolean>(false);
   
-  // Tipe untuk useRef yang menargetkan elemen HTML
+  const [isLogoutModalOpen, setLogoutModalOpen] = useState<boolean>(false);
   const notificationRef = useRef<HTMLDivElement | null>(null);
   const profileRef = useRef<HTMLDivElement | null>(null);
 
@@ -54,7 +55,7 @@ const Topbar: React.FC<TopbarProps> = ({ onToggleSidebar, userName, userRole, on
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  return (
+  return ( <>
     <header className="h-16 flex items-center justify-between px-4 shadow-sm bg-white border-b border-gray-200 sticky top-0 z-40">
       {/* Sidebar Toggle + Search */}
       <div className="flex items-center gap-2">
@@ -134,14 +135,23 @@ const Topbar: React.FC<TopbarProps> = ({ onToggleSidebar, userName, userRole, on
                 <li className="flex items-center gap-2 px-4 py-2 hover:bg-gray-50 cursor-pointer"><Settings className="w-4 h-4" /> Pengaturan</li>
               </ul>
               <div className="border-t"></div>
-              <button onClick={onLogout} className="w-full flex items-center gap-2 px-4 py-2 hover:bg-gray-50 text-red-600">
-                <LogOutIcon className="w-4 h-4" /> Keluar
-              </button>
+              <button 
+                  onClick={() => setLogoutModalOpen(true)} 
+                  className="w-full flex items-center gap-2 px-4 py-2 hover:bg-gray-50 text-red-600"
+                >
+                  <LogOutIcon className="w-4 h-4" /> Keluar
+                </button>
             </div>
           )}
         </div>
       </div>
     </header>
+    <LogoutConfirmationModal
+        isOpen={isLogoutModalOpen}
+        onClose={() => setLogoutModalOpen(false)}
+        onConfirm={onLogout} 
+    />
+    </>
   );
 };
 

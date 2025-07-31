@@ -70,6 +70,7 @@ class AdminLoginController extends Controller
 
         if(Auth::guard('admin')->attempt($kredensial, $remember)){
             $request->session()->regenerate();
+            // Log activity for admin login
             LogActivity::create([
                 'id_user' => Auth::guard('admin')->id(),
                 'activity' => 'login',
@@ -84,12 +85,16 @@ class AdminLoginController extends Controller
     }
 
     public function admin_logout(Request $request){
-        Auth::logout();
-        LogActivity::create([
-            'id_user' => Auth::guard('admin')->id(),
-            'activity' => 'logout',
-            'description' => 'dari sistem',
-        ]);
+        $userId = Auth::guard('admin')->id();
+        Auth::guard('admin')->logout();
+        // Log activity for admin logout
+        if ($userId) {
+            LogActivity::create([
+                'id_user' => $userId,
+                'activity' => 'logout',
+                'description' => 'dari sistem',
+            ]);
+        }
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 

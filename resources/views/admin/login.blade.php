@@ -17,6 +17,8 @@
         }"
         class="relative w-1/2 bg-gradient-to-br from-primary to-[#036ED1] flex items-center justify-center overflow-hidden"
     >
+    <div>
+    </div>
         <template x-for="(image, index) in images" :key="index">
             <img :src="image" alt="slide"
                 class="absolute transition-all duration-700 w-5/6"
@@ -32,9 +34,9 @@
         <div class="w-full max-w-md mx-auto space-y-6">
             <div>
                 <h1 class="text-3xl font-semibold text-gray-800">
-                    Welcome Back! <span class="inline-block">👋</span>
+                    Selamat Datang! <span class="inline-block">👋</span>
                 </h1>
-                <p class="text-gray-500 mt-2">Login to access your account</p>
+                <p class="text-gray-500 mt-2">Login untuk mengakses akun anda</p>
             </div>
 
             @if(session('alert'))
@@ -82,29 +84,22 @@
                 <div class="flex items-center justify-between text-sm text-gray-600">
                     <label class="inline-flex items-center gap-2 cursor-pointer">
                         <input type="checkbox" name="remember" class="accent-secondary w-4 h-4" />
-                        Remember me
+                        Ingat saya
                     </label>
                     <a href="#" 
                         class="underline decoration-gray-400 underline-offset-2 text-sm text-gray-500 hover:text-blue-600 transition">
-                        Forgot Password?
+                        Lupa kata sandi?
                     </a>
                 </div>
 
                 {{-- Button --}}
                 <button
                     type="submit"
-                    class="w-full mt-4 rounded-md text-white px-4 py-2 shadow-md transition duration-300 
-                    [background:radial-gradient(circle_at_center,#F46F23,#d35400)] 
-                    hover:shadow-orange-400/70 hover:shadow-lg 
-                    focus:outline-none focus:ring-2 focus:ring-orange-400 focus:ring-opacity-60 font-semibold"
+                    class="w-full mt-4 bg-[#F46F23] text-white px-4 py-2 rounded-lg shadow-lg shadow-[#F46F23]/40 hover:bg-orange-600 hover:shadow-xl hover:shadow-orange-600/40 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 transition-all duration-300 font-semibold"
                 >
                     Login
                 </button>
             </form>
-
-            <p class="text-center text-sm text-gray-600">
-                No account yet? <a href="admin_register" class="text-primary font-medium hover:underline">Sign Up</a>
-            </p>
         </div>
     </div>
 </div>

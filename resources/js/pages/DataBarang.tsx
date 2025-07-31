@@ -499,8 +499,8 @@ function DataBarang() {
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                         {barang.satuan}
                       </td>
-                      <td className=" py-4 whitespace-nowrap text-right text-sm font-medium">
-                        <div className="flex items-center justify-center space-x-2">
+                      <td className=" py-4 whitespace-nowrap text-center text-sm font-medium">
+                        <div className="flex items-center space-x-2">
                           <button
                             onClick={() => handleOpenEditModal(barang)}
                             className="text-blue-600 hover:text-blue-900 p-1 rounded-full hover:bg-blue-50 transition duration-150 ease-in-out"
