@@ -13,17 +13,21 @@ function DashboardPegawai() {
     const [divisi, setDivisi] = useState("Divisi");
 
     const [jumlah, setJumlah] = useState({
+        total: 0,
         menunggu: 0,
         diproses: 0,
         diantar: 0,
         diterima: 0,
+        ditolak: 0,
     });
 
     const [persen, setPersen] = useState({
+        total: 0,
         menunggu: 0,
         diproses: 0,
         diantar: 0,
         diterima: 0,
+        ditolak: 0,
     });
 
     const [api, setApi] = useState<CarouselApi | null>(null);
@@ -57,17 +61,21 @@ function DashboardPegawai() {
             setDivisi(el.dataset.divisi || "Divisi");
 
             setJumlah({
+                total: parseInt(el.dataset.total || "0"),
                 menunggu: parseInt(el.dataset.menunggu || "0"),
                 diproses: parseInt(el.dataset.diproses || "0"),
                 diantar: parseInt(el.dataset.diantar || "0"),
                 diterima: parseInt(el.dataset.diterima || "0"),
+                ditolak: parseInt(el.dataset.ditolak || "0"),
             });
 
             setPersen({
+                total: parseInt(el.dataset.persenTotal || "0"),
                 menunggu: parseInt(el.dataset.persenMenunggu || "0"),
                 diproses: parseInt(el.dataset.persenDiproses || "0"),
                 diantar: parseInt(el.dataset.persenDiantar || "0"),
                 diterima: parseInt(el.dataset.persenDiterima || "0"),
+                ditolak: parseInt(el.dataset.persenDitolak || "0"),
             });
         }
 
@@ -163,11 +171,18 @@ function DashboardPegawai() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-8">
                     {[
                         {
+                            label: "Total Permintaan",
+                            key: "total",
+                            color: "text-gray-400",
+                            image: "/assets/bookmark.png",
+                            bg: "bg-gray-400",
+                        },
+                        {
                             label: "Menunggu",
                             key: "menunggu",
-                            color: "text-red-400",
+                            color: "text-orange-400",
                             image: "/assets/menunggu.png",
-                            bg: "bg-red-400",
+                            bg: "bg-orange-400",
                         },
                         {
                             label: "Sedang Diproses",
@@ -190,6 +205,13 @@ function DashboardPegawai() {
                             image: "/assets/tick-square.png",
                             bg: "bg-green-400",
                         },
+                        {
+                            label: "Ditolak",
+                            key: "ditolak",
+                            color: "text-red-400",
+                            image: "/assets/close-square.png",
+                            bg: "bg-red-400",
+                        },
                     ].map((item, idx) => (
                         <Card key={idx} className="shadow-sm">
                             <CardContent className="p-4">
@@ -202,7 +224,7 @@ function DashboardPegawai() {
                                     <img
                                         src={item.image}
                                         alt="menunggu"
-                                        className={`w-9 h-9 p-2 rounded-full ${item.bg}`}
+                                        className={`w-10 h-10 p-2 rounded-full ${item.bg}`}
                                     />
                                 </div>
                                 <p className="text-3xl font-bold mt-1">

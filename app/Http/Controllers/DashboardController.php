@@ -22,7 +22,7 @@ class DashboardController extends Controller
         $totalBarang = Barang::count();
         $totalBarangMasuk = BarangMasuk::sum('jumlah_masuk');
         $totalBarangKeluar = DetailPermintaan::whereHas('permintaan', function ($query) {
-            $query->where('status', 'selesai'); 
+            $query->where('status', 'telah diterima'); 
         })->sum('jumlah_minta');
         $totalPending = Permintaan::where('status', 'menunggu')->count();
 

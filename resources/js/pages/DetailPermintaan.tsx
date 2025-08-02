@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import Status from "@/components/modal/StatusModal";
 import axios from "axios";
+import SuccessModal from "@/components/modal/SuccessModal";
+import FailModal from "@/components/modal/FailModal";
 
 interface DetailPermintaanProps {
     detail_permintaan: {
@@ -20,18 +22,15 @@ interface DetailPermintaanProps {
     };
 }
 
-const DetailPermintaan: React.FC<DetailPermintaanProps> = ({
-    detail_permintaan,
-}) => {
+const DetailPermintaan: React.FC<DetailPermintaanProps> = ({detail_permintaan}) => {
     const [permintaan, setPermintaan] = useState(detail_permintaan);
+    const [successMessage, setSuccessMessage] = useState<string | null>(null);
+    const [failMessage, setFailMessage] = useState<string | null>(null);
 
     const handleKonfirmasi = async () => {
         try {
             const updatedStatus = "telah diterima";
-
-            const tokenElement = document.querySelector(
-                'meta[name="csrf-token"]'
-            );
+            const tokenElement = document.querySelector('meta[name="csrf-token"]');
             const csrfToken = tokenElement?.getAttribute("content");
 
             if (!csrfToken) {
@@ -49,15 +48,14 @@ const DetailPermintaan: React.FC<DetailPermintaanProps> = ({
                 }
             );
 
+            setSuccessMessage('Konfirmasi penerimaan barang berhasil')
             setPermintaan((prev) => ({
                 ...prev,
                 status: updatedStatus,
             }));
-
-            alert("Status berhasil dikonfirmasi sebagai 'Telah Diterima'");
         } catch (error) {
             console.error("Gagal konfirmasi:", error);
-            alert("Terjadi kesalahan saat konfirmasi. Silakan coba lagi.");
+            setFailMessage("Terjadi kesalahan saat konfirmasi. Silakan coba lagi.")
         }
     };
 
@@ -133,6 +131,20 @@ const DetailPermintaan: React.FC<DetailPermintaanProps> = ({
                     Konfirmasi
                 </button>
             )}
+
+            <SuccessModal
+                isOpen={!!successMessage}
+                onClose={() => {
+                    setSuccessMessage(null);
+                    window.location.href = "/riwayat-permintaan";
+                }}
+                message={successMessage || ""}
+            />
+            <FailModal
+                isOpen={!!failMessage}
+                onClose={() => setFailMessage(null)}
+                message={failMessage || ""}
+            />
         </div>
     );
 };

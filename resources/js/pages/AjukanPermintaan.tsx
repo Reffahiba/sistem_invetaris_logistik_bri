@@ -235,7 +235,7 @@ function AjukanPermintaan() {
                     isOpen={!!successMessage}
                     onClose={() => {
                         setSuccessMessage(null);
-                        window.location.href = "/ajukan-permintaan";
+                        window.location.href = "/lacak-permintaan";
                     }}
                     message={successMessage || ""}
                 />

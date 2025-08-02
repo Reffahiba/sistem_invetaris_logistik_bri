@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\DB;
 use App\Models\Divisi;
 use App\Models\Permintaan;
 use App\Models\DetailPermintaan;
+use App\Models\AkunPengguna;
+use App\Models\Notifikasi;
 
 class LacakPermintaanController extends Controller
 {
@@ -19,7 +21,7 @@ class LacakPermintaanController extends Controller
         $this->permintaan = new Permintaan();
     }
 
-    public function lacak_permintaan(Request $request){
+    public function lacakPermintaan(Request $request){
         $user = Auth::user();
         $nama = $user->nama_user;
         $divisi = $user->divisi->nama_divisi;
@@ -55,9 +57,10 @@ class LacakPermintaanController extends Controller
         ]);
     }
 
-    public function update_status_permintaan(Request $request, $id){
+    public function updateStatusPermintaan(Request $request, $id){
+        $user = Auth::user();
+        
         // Validasi input
-
         $request->validate([
             'status' => 'required|in:menunggu,sedang diproses,sedang diantar,telah diterima',
         ]);
@@ -74,6 +77,20 @@ class LacakPermintaanController extends Controller
         // Update status
         $permintaan->status = $request->input('status');
         $permintaan->save();
+
+        // NOTIFIKASI KE ADMIN
+        $admins = AkunPengguna::where('id_role', 1)->get(); 
+        $peminta = $user->nama_user;
+
+        foreach ($admins as $admin) {
+            Notifikasi::create([
+                'id_user' => $admin->id_user,
+                'pesan' => "Permintaan barang #{$permintaan->id_permintaan} dari {$peminta} telah diterima",
+                'link' => '/admin/permintaan',
+            ]);
+        }
+
+
 
         return response()->json([
             'message' => 'Status berhasil diperbarui.',

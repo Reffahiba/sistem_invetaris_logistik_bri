@@ -7,6 +7,7 @@ use App\Models\Permintaan;
 use App\Models\DetailPermintaan;
 use App\Models\Barang;
 use App\Models\AkunPengguna;
+use App\Models\Notifikasi;
 use Illuminate\Http\Request;
 
 class PermintaanController extends Controller
@@ -38,6 +39,7 @@ class PermintaanController extends Controller
                 'jumlah_minta' => $detail->jumlah_minta,
                 'id_permintaan' => $detail->id_permintaan,
                 'status' => $detail->permintaan->status ?? 'Tidak diketahui',
+                'tanggal_minta' => $detail->permintaan->tanggal_minta,
                 'nama_user' => $detail->permintaan->akun_pengguna->nama_user ?? 'Tidak diketahui',
                 'gambar_barang' => $detail->barang->gambar_barang 
                         ? asset($detail->barang->gambar_barang)
@@ -105,23 +107,21 @@ class PermintaanController extends Controller
         $permintaan->alasan_penolakan = $request->input('alasan');
         $permintaan->save();
 
+
+
+        // Kirim notifikasi ke pegawai
+        $sender = Auth::guard('admin')->user();
+        
+        Notifikasi::create([
+            'id_user' => $permintaan->id_user,
+            'id_sender' => $sender->id_user,
+            'id_receiver' => $permintaan->id_user,
+            'pesan' => "Permintaan #{$permintaan->id_permintaan} Anda " . strtolower($request->status),
+            'link' => '/lacak/permintaan',
+            'is_read' => false,
+        ]);
+
         return response()->json(['message' => 'Status updated successfully']);
-    }
-
-    public function getNotifikasi(){
-        $notif = Permintaan::whereIn('status', ['sedang diproses', 'sedang diantar'])
-            ->latest()
-            ->limit(10)
-            ->get()
-            ->map(function ($item) {
-                return [
-                    'id_permintaan' => $item->id_permintaan,
-                    'status' => $item->status,
-                    'message' => "Permintaan #{$item->id_permintaan} {$item->status}",
-                ];
-            });
-
-        return response()->json($notif);
     }
 
     public function destroy($id)

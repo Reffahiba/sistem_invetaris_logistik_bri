@@ -3,7 +3,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import Layout from "@/LayoutAdmin";
 import axios from "axios";
-import { Eye, ChevronDown, ChevronUp } from "lucide-react";
+import { Eye, ChevronDown, ChevronUp, Search } from "lucide-react";
 import ImageDetailModal from "@/components/modal/ImageDetailModal";
 import Breadcrumb from "@/components/ui/breadcrumb";
 import SuccessModal from "@/components/modal/SuccessModal";
@@ -11,6 +11,14 @@ import FailModal from "@/components/modal/FailModal";
 import ConfirmationModal from "@/components/modal/ConfirmationModal";
 import RejectReasonModal from "@/components/modal/RejectModal";
 import { Spa } from "@mui/icons-material";
+
+
+type Barang = {
+    id_barang: number;
+    nama_barang: string;
+    stok: number;
+    gambar_barang?: string;
+};
 
 // Tipe data untuk permintaan
 interface DetailPermintaan {
@@ -20,6 +28,7 @@ interface DetailPermintaan {
     id_permintaan: number;
     id_barang: number;
     status: string;
+    tanggal_minta: Date;
     gambar_barang?: string | null;
     nama_user: string;
 }
@@ -54,14 +63,14 @@ export default function Permintaan() {
     const [sortBy, setSortBy] = useState<keyof DetailPermintaan>("nama_barang");
     const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
     const [currentPage, setCurrentPage] = useState(1);
-    const [perPage, setPerPage] = useState(10);
-    const [totalPages, setTotalPages] = useState(1);
+    const [perPage, setPerPage] = useState(5);
     const [isLoading, setIsLoading] = useState(false);
+    const [startDate, setStartDate] = useState<Date | null>(null);
+    const [endDate, setEndDate] = useState<Date | null>(null);
+    const [searchTerm, setSearchTerm] = useState<string>("");
 
     const [isImageModalOpen, setIsImageModalOpen] = useState(false);
-    const [currentImageModalUrl, setCurrentImageModalUrl] = useState<
-        string | null
-    >(null);
+    const [currentImageModalUrl, setCurrentImageModalUrl] = useState<string | null>(null);
     const [currentImageModalAlt, setCurrentImageModalAlt] = useState("");
     const [hoveredImageId, setHoveredImageId] = useState<number | null>(null);
 
@@ -77,6 +86,37 @@ export default function Permintaan() {
     const [isRejectModalOpen, setIsRejectModalOpen] = useState(false);
     const [rejectingId, setRejectingId] = useState<number | null>(null);
 
+    function normalizeDate(date: Date) {
+        return new Date(date.getFullYear(), date.getMonth(), date.getDate());
+    }
+
+    const filteredPermintaan = data.filter((item) => {
+        const tanggalItem = normalizeDate(new Date(item.tanggal_minta));
+        const start = startDate ? normalizeDate(startDate) : null;
+        const end = endDate ? normalizeDate(endDate) : null;
+
+        // Jika startDate ada dan tanggal item lebih kecil, exclude
+        if (start && tanggalItem < start) return false;
+
+        // Jika endDate ada dan tanggal item lebih besar, exclude
+        if (end && tanggalItem > end) return false;
+
+        const matchesSearch =
+        item.nama_barang.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        item.nama_user.toLowerCase().includes(searchTerm.toLowerCase());
+
+        return matchesSearch;
+    });
+
+    // Pagination
+    const totalItems = filteredPermintaan.length;
+    const totalPages = Math.ceil(totalItems / perPage);
+
+    const paginatedPermintaan = filteredPermintaan.slice(
+        (currentPage - 1) * perPage,
+        currentPage * perPage
+    );
+
     const fetchData = async () => {
         setIsLoading(true);
         try {
@@ -90,7 +130,6 @@ export default function Permintaan() {
                 },
             });
             setData(res.data.detail_permintaan);
-            setTotalPages(res.data.last_page);
         } catch (err) {
             console.error("Gagal memuat data permintaan", err);
         } finally {
@@ -123,32 +162,6 @@ export default function Permintaan() {
         setIsImageModalOpen(false);
         setCurrentImageModalUrl(null);
         setCurrentImageModalAlt("");
-    };
-
-    // Jumlah angka halaman yang akan ditampilkan
-    const getPageNumbers = () => {
-        const pageNumbers = [];
-        const maxPagesToShow = 5;
-        let startPage = Math.max(
-            1,
-            currentPage - Math.floor(maxPagesToShow / 2)
-        );
-        let endPage = Math.min(
-            totalPages,
-            currentPage + Math.floor(maxPagesToShow / 2)
-        );
-
-        if (endPage - startPage + 1 < maxPagesToShow) {
-            startPage = Math.max(1, endPage - maxPagesToShow + 1);
-        }
-        if (startPage === 1 && endPage < totalPages) {
-            endPage = Math.min(totalPages, maxPagesToShow);
-        }
-
-        for (let i = startPage; i <= endPage; i++) {
-            pageNumbers.push(i);
-        }
-        return pageNumbers;
     };
 
     const confirmUpdateStatus = (id: number, newStatus: string) => {
@@ -210,17 +223,6 @@ export default function Permintaan() {
         }
     };
 
-    // Pagination Disabled & Activated Effect
-    const basePaginationButtonClass =
-        "px-3 py-1 rounded-sm font-medium transition duration-150 ease-in-out text-sm";
-    const activePaginationButtonClass =
-        "bg-blue-600 text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2";
-    const inactivePaginationButtonClass =
-        "bg-gray-200 text-gray-700 hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed";
-    const activePageNumberClass = "bg-blue-600 text-white font-bold";
-    const inactivePageNumberClass =
-        "bg-white text-gray-700 border border-gray-300 hover:bg-gray-100";
-
     return (
         <Layout>
             <main className="min-h-screen">
@@ -233,16 +235,18 @@ export default function Permintaan() {
 
                 <div className="bg-white p-6 rounded-lg shadow-sm">
                     <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pb-6 border-b border-gray-200 mb-6">
-                        <input
-                            type="text"
-                            placeholder="Cari nama barang..."
-                            value={search}
-                            onChange={(e) => {
-                                setSearch(e.target.value);
-                                setCurrentPage(1);
-                            }}
-                            className="border border-gray-300 rounded-lg px-4 py-2 w-full sm:w-80 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
-                        />
+                        <div className="relative w-full md:w-48">
+                            <input
+                                type="text"
+                                placeholder="Search..."
+                                className="w-full rounded-full border px-3 py-1 pl-10 text-sm outline-none focus:outline-none focus:ring-1 focus:ring-gray-200"
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                            />
+                            <Search className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
+                        </div>
                         <div className="w-full sm:w-48">
                             <select
                                 value={perPage}
@@ -252,7 +256,7 @@ export default function Permintaan() {
                                 }}
                                 className="w-full border border-gray-300 rounded-lg px-4 py-2"
                             >
-                                {[10, 25, 50].map((n) => (
+                                {[5, 10, 25, 50].map((n) => (
                                     <option key={n} value={n}>
                                         {n} entri / halaman
                                     </option>
@@ -280,6 +284,9 @@ export default function Permintaan() {
                                         )}
                                     </th>
                                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                                        Tanggal Minta
+                                    </th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                                         Jumlah Minta
                                     </th>
                                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
@@ -300,7 +307,7 @@ export default function Permintaan() {
                                             Memuat...
                                         </td>
                                     </tr>
-                                ) : data.length === 0 ? (
+                                ) : filteredPermintaan.length === 0 ? (
                                     <tr>
                                         <td
                                             colSpan={4}
@@ -310,7 +317,7 @@ export default function Permintaan() {
                                         </td>
                                     </tr>
                                 ) : (
-                                    data.map((p) => (
+                                    filteredPermintaan.map((p) => (
                                         <tr
                                             key={p.id_detail}
                                             className="hover:bg-gray-50"
@@ -351,6 +358,11 @@ export default function Permintaan() {
                                                 {p.nama_barang}
                                             </td>
                                             <td className="px-6 py-4 text-sm">
+                                                {new Date(
+                                                    p.tanggal_minta
+                                                ).toLocaleDateString("id-ID")}
+                                            </td>
+                                            <td className="px-6 py-4 text-sm">
                                                 {p.jumlah_minta}
                                             </td>
                                             <td className="px-6 py-4 space-x-2">
@@ -365,7 +377,7 @@ export default function Permintaan() {
                                                                     true
                                                                 );
                                                             }}
-                                                            className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm"
+                                                            className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-lg text-md"
                                                         >
                                                             Tolak
                                                         </button>
@@ -376,7 +388,7 @@ export default function Permintaan() {
                                                                     "sedang diproses"
                                                                 )
                                                             }
-                                                            className="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded text-sm"
+                                                            className="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded-lg text-md"
                                                         >
                                                             Setujui
                                                         </button>
@@ -391,22 +403,22 @@ export default function Permintaan() {
                                                                 "sedang diantar"
                                                             )
                                                         }
-                                                        className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm"
+                                                        className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded-lg text-md"
                                                     >
                                                         Antar
                                                     </button>
                                                 )}
                                                 {p.status ===
                                                 "sedang diantar" ? (
-                                                    <p className="font-semibold text-sm">
-                                                        <span className="text-blue-600 bg-blue-100 ring-1 ring-blue-600 py-1 px-2 rounded-xl">
+                                                    <p className="font-semibold text-md text-center">
+                                                        <span className="text-blue-600 bg-blue-100 ring-1 ring-blue-600 py-1 rounded-xl block break-words sm:text-sm">
                                                             Sedang Diantar
                                                         </span>
                                                     </p>
                                                 ) : p.status ===
                                                   "telah diterima" ? (
-                                                    <p className="font-semibold text-sm">
-                                                        <span className="text-green-600 bg-green-100 ring-1 ring-green-600 py-1 px-2 rounded-xl">
+                                                    <p className="font-semibold text-md text-center">
+                                                        <span className="text-green-600 bg-green-100 ring-1 ring-green-600 py-1 rounded-xl block break-words sm:text-sm">
                                                             Telah Diterima
                                                         </span>
                                                     </p>
@@ -422,69 +434,53 @@ export default function Permintaan() {
                         </table>
                     </div>
 
-                    {/* Pagination Footer */}
-                    <div className="flex flex-col sm:flex-row items-center justify-between mt-6 pt-4 border-t border-gray-200">
-                        <span className="text-gray-600 mb-2 sm:mb-0">
-                            Halaman{" "}
-                            <span className="font-semibold">{currentPage}</span>{" "}
-                            dari{" "}
-                            <span className="font-semibold">{totalPages}</span>
-                        </span>
-                        <div className="flex space-x-2">
-                            <button
-                                onClick={() =>
-                                    setCurrentPage((prev) =>
-                                        Math.max(prev - 1, 1)
-                                    )
-                                }
-                                disabled={currentPage === 1 || isLoading}
-                                className={`${basePaginationButtonClass} ${
-                                    currentPage === 1
-                                        ? inactivePaginationButtonClass
-                                        : activePaginationButtonClass
-                                }`}
-                            >
-                                Sebelumnya
-                            </button>
-
-                            {getPageNumbers().map((pageNumber) => (
+                    {/* Pagination */}
+                    {totalPages >= 1 && (
+                        <div className="flex justify-between mt-4 gap-2">
+                            <span className="text-gray-600">
+                                Halaman {currentPage} dari {totalPages}
+                            </span>
+                            <div className="space-x-2 flex flex-row">
                                 <button
-                                    key={pageNumber}
-                                    onClick={() => setCurrentPage(pageNumber)}
-                                    disabled={isLoading}
-                                    className={`
-                    ${basePaginationButtonClass}
-                    ${
-                        pageNumber === currentPage
-                            ? activePageNumberClass
-                            : inactivePageNumberClass
-                    }
-                    ${isLoading ? "opacity-50 cursor-not-allowed" : ""}
-                    `}
+                                    onClick={() =>
+                                        setCurrentPage((p) =>
+                                            Math.max(p - 1, 1)
+                                        )
+                                    }
+                                    disabled={currentPage === 1}
+                                    className="px-3 py-1 rounded bg-gray-200 disabled:opacity-50"
                                 >
-                                    {pageNumber}
+                                    Prev
                                 </button>
-                            ))}
 
-                            <button
-                                onClick={() =>
-                                    setCurrentPage((prev) =>
-                                        Math.min(prev + 1, totalPages)
-                                    )
-                                }
-                                disabled={
-                                    currentPage === totalPages || isLoading
-                                }
-                                className={`${basePaginationButtonClass} ${
-                                    currentPage === totalPages
-                                        ? inactivePaginationButtonClass
-                                        : activePaginationButtonClass
-                                }`}
-                            >
-                                Selanjutnya
-                            </button>
+                                {[...Array(totalPages)].map((_, i) => (
+                                    <button
+                                        key={i}
+                                        onClick={() => setCurrentPage(i + 1)}
+                                        className={`px-3 py-1 rounded-xl ${
+                                            currentPage === i + 1
+                                                ? "bg-green-500 text-white"
+                                                : "bg-gray-100"
+                                        }`}
+                                    >
+                                        {i + 1}
+                                    </button>
+                                ))}
+
+                                <button
+                                    onClick={() =>
+                                        setCurrentPage((p) =>
+                                            Math.min(p + 1, totalPages)
+                                        )
+                                    }
+                                    disabled={currentPage === totalPages}
+                                    className="px-3 py-1 rounded bg-gray-200 disabled:opacity-50"
+                                >
+                                    Next
+                                </button>
+                            </div>
                         </div>
-                    </div>
+                    )}
                 </div>
 
                 <ImageDetailModal

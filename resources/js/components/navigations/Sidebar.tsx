@@ -12,9 +12,10 @@ interface NavItemProps {
   item: NavItemData;
   isActive: boolean;
   isSubItemActive: boolean;
+  currentPath: string;
 }
 
-const NavItem: React.FC<NavItemProps> = ({ item, isActive, isSubItemActive }) => {
+const NavItem: React.FC<NavItemProps> = ({ item, isActive, isSubItemActive, currentPath }) => {
   const [isOpen, setIsOpen] = useState(isSubItemActive);
 
   useEffect(() => {
@@ -48,12 +49,12 @@ const NavItem: React.FC<NavItemProps> = ({ item, isActive, isSubItemActive }) =>
           }`}
         >
           <div className="overflow-hidden">
-             <ul className="pl-8 pt-1 pb-2 space-y-1">
+            <ul className="pl-8 pt-1 pb-2 space-y-1">
               {item.subItems.map(subItem => (
                 <li key={subItem.href}>
                   <a
                     href={subItem.href}
-                    className={`block p-2 rounded-md text-sm ${window.location.pathname === subItem.href ? 'bg-blue-100 text-blue-700 font-medium' : 'hover:bg-gray-100'}`}
+                    className={`block p-2 rounded-md text-sm ${currentPath === subItem.href ? 'bg-blue-100 text-blue-700 font-medium' : 'hover:bg-gray-100'}`}
                   >
                     {subItem.label}
                   </a>
@@ -67,7 +68,7 @@ const NavItem: React.FC<NavItemProps> = ({ item, isActive, isSubItemActive }) =>
   }
 
   return (
-     <li>
+    <li>
       <a
         href={item.href}
         className={`flex items-center gap-3 p-2 mb-3 rounded-lg text-sm transition-colors duration-300 ease-in-out ${isActive ? 'bg-blue-100 text-blue-600 font-semibold' : 'text-gray-700 hover:bg-gray-200'}`}
@@ -104,7 +105,7 @@ const Sidebar: React.FC<SidebarProps> = ({ currentPath, isOpen, onClose }) => {
     },
     {
       href: "#",
-      iconName: "arrow-right-left",
+      iconName: "convert-3d-cube",
       label: "Manajemen Stok",
       subItems: [
         { href: "/admin/barang-masuk", label: "Barang Masuk" },
@@ -127,12 +128,13 @@ const Sidebar: React.FC<SidebarProps> = ({ currentPath, isOpen, onClose }) => {
             const isActive = (currentPath === item.href) || isSubItemActive;
 
             return (
-              <NavItem
-                key={item.label}
-                item={item}
-                isActive={isActive}
-                isSubItemActive={isSubItemActive}
-              />
+                <NavItem
+                    key={item.label}
+                    item={item}
+                    isActive={isActive}
+                    isSubItemActive={isSubItemActive}
+                    currentPath={currentPath}
+                />
             );
           })}
         </ul>

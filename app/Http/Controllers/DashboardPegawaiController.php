@@ -25,28 +25,33 @@ class DashboardPegawaiController extends Controller
 
         $permintaan_perUser = $this->permintaan->where('id_user', $id_user);
 
-        $total_permintaan = $permintaan_perUser->count();
+        $totalPermintaan = $permintaan_perUser->count();
 
         $jumlahMenunggu = (clone $permintaan_perUser)->where('status', 'Menunggu')->count();
         $jumlahSedangDiproses = (clone $permintaan_perUser)->where('status', 'Sedang Diproses')->count();
         $jumlahSedangDiantar = (clone $permintaan_perUser)->where('status', 'Sedang Diantar')->count();
         $jumlahTelahDiterima = (clone $permintaan_perUser)->where('status', 'Telah Diterima')->count();
+        $jumlahDitolak = (clone $permintaan_perUser)->where('status', 'Ditolak')->count();
 
-        $persen = function ($jumlah) use ($total_permintaan) {
-            return $total_permintaan > 0 ? round(($jumlah / $total_permintaan) * 100) : 0;
+        $persen = function ($jumlah) use ($totalPermintaan) {
+            return $totalPermintaan > 0 ? round(($jumlah / $totalPermintaan) * 100) : 0;
         };
 
         $data = [
             'nama' => $nama,
             'divisi' => $divisi,
+            'totalPermintaan' => $totalPermintaan,
             'jumlahMenunggu' => $jumlahMenunggu,
             'jumlahDiproses' => $jumlahSedangDiproses,
             'jumlahDiantar' => $jumlahSedangDiantar,
             'jumlahDiterima' => $jumlahTelahDiterima,
+            'jumlahDitolak' => $jumlahDitolak,
+            'persenTotal' => $persen($totalPermintaan),
             'persenMenunggu' => $persen($jumlahMenunggu),
             'persenDiproses' => $persen($jumlahSedangDiproses),
             'persenDiantar' => $persen($jumlahSedangDiantar),
             'persenDiterima' => $persen($jumlahTelahDiterima),
+            'persenDitolak' => $persen($jumlahDitolak),
         ];
         
         return view('pegawai.dashboard', $data);

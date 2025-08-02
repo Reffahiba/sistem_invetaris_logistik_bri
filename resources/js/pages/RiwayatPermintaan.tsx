@@ -20,9 +20,7 @@ interface DetailPermintaan {
 
 const RiwayatPermintaan: React.FC = () => {
     const [daftarPermintaan, setDaftarPermintaan] = useState<Permintaan[]>([]);
-    const [detailPermintaan, setDetailPermintaan] = useState<
-        DetailPermintaan[]
-    >([]);
+    const [detailPermintaan, setDetailPermintaan] = useState<DetailPermintaan[]>([]);
     const [selected, setSelected] = useState<DetailPermintaan[] | null>(null);
     const [currentPage, setCurrentPage] = useState(1);
     const [perPage, setPerPage] = useState(5);

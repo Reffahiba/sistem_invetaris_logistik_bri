@@ -27,7 +27,7 @@ class AjukanPermintaanController extends Controller
         $this->detail_permintaan = new DetailPermintaan();
     }
 
-    public function ajukan_permintaan(Request $request){
+    public function ajukanPermintaan(Request $request){
         $user = Auth::user();
         $nama = $user->nama_user;
         $divisi = $user->divisi->nama_divisi;
@@ -72,7 +72,7 @@ class AjukanPermintaanController extends Controller
         return view('pegawai.ajukan_permintaan', $data);
     }
 
-    public function simpan_permintaan(Request $request){
+    public function simpanPermintaan(Request $request){
         $user = Auth::user();
         $id_barang = $request->input('id_barang');
         $jumlah_minta = $request->input('jumlah_minta');
@@ -100,7 +100,6 @@ class AjukanPermintaanController extends Controller
                 'jumlah_minta' => $jumlah_minta,
             ]);
             
-
             // Kurangi stok
             $barang->stok -= $jumlah_minta;
             $barang->save();

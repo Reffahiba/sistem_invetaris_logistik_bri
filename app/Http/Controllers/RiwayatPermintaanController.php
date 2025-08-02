@@ -23,7 +23,7 @@ class RiwayatPermintaanController extends Controller
         $this->detail_permintaan = new DetailPermintaan();
     }
 
-    public function riwayat_permintaan(Request $request){
+    public function riwayatPermintaan(Request $request){
         $user = Auth::user();
         $nama = $user->nama_user;
         $divisi = $user->divisi->nama_divisi;

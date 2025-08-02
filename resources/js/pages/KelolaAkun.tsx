@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import Layout from "../LayoutAdmin";
 import axios from "axios";
+import SuccessModal from "@/components/modal/SuccessModal";
+import FailModal from "@/components/modal/FailModal";
 
 axios.defaults.headers.common["X-Requested-With"] = "XMLHttpRequest";
 
@@ -39,6 +41,8 @@ const KelolaAkun = () => {
         id_divisi: "" as number | "",
     });
     const [editingId, setEditingId] = useState<number | null>(null);
+    const [successMessage, setSuccessMessage] = useState<string | null>(null);
+    const [failMessage, setFailMessage] = useState<string | null>(null);
 
     useEffect(() => {
         const rootElement = document.getElementById("kelolaAkun-root");
@@ -110,13 +114,12 @@ const KelolaAkun = () => {
 
             if (editingId) {
                 await axios.put(`/admin-edit-akun/${editingId}`, payload);
-                window.location.href = "/admin/kelola-akun";
+                setSuccessMessage('Edit data pegawai berhasil');
             } else {
                 await axios
                     .post("/admin-tambah-akun", payload)
                     .then((response) => {
-                        alert(response.data.message);
-                        window.location.href = "/admin/kelola-akun";
+                        setSuccessMessage("Akun pegawai berhasil ditambahkan");
                     })
                     .catch((error) => {
                         console.error(error);
@@ -145,8 +148,7 @@ const KelolaAkun = () => {
         if (confirm("Yakin ingin menghapus akun ini?")) {
             try {
                 await axios.delete(`/admin-hapus-akun/${id}`);
-                window.location.href = "/admin/kelola-akun";
-                fetchAkun();
+                setSuccessMessage("Akun pegawai berhasil dihapus");
             } catch (error) {
                 console.error("Gagal hapus akun", error);
             }
@@ -192,21 +194,21 @@ const KelolaAkun = () => {
                         </tbody>
                     ) : (
                         <>
-                            <thead>
-                                <tr>
-                                    <th className="py-3 px-6 text-left">
+                            <thead className="bg-gray-50 border-b border-gray-200">
+                                <tr className="bg-gray-200 text-white">
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                         Nama
                                     </th>
-                                    <th className="py-3 px-6 text-left">
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                         Email
                                     </th>
-                                    <th className="py-3 px-6 text-left">
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                         Telepon
                                     </th>
-                                    <th className="py-3 px-6 text-left">
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                         Divisi
                                     </th>
-                                    <th className="py-3 px-6 text-left">
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                         Aksi
                                     </th>
                                 </tr>
@@ -334,6 +336,20 @@ const KelolaAkun = () => {
                     </div>
                 </div>
             )}
+
+            <SuccessModal
+                isOpen={!!successMessage}
+                onClose={() => {
+                    setSuccessMessage(null);
+                    window.location.href = "/admin/kelola-akun";
+                }}
+                message={successMessage || ""}
+            />
+            <FailModal
+                isOpen={!!failMessage}
+                onClose={() => setFailMessage(null)}
+                message={failMessage || ""}
+            />
         </Layout>
     );
 };

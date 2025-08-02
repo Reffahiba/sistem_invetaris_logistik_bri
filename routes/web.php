@@ -92,12 +92,14 @@ Route::post('/admin-logout', [AdminLoginController::class, 'admin_logout'])->nam
 // ---------------- Pegawai ----------------
 Route::middleware(['auth:pegawai'])->group(function () {
     Route::get('/dashboard', [DashboardPegawaiController::class, 'dashboard'])->name('dashbord');
-    Route::get('/ajukan-permintaan', [AjukanPermintaanController::class, 'ajukan_permintaan'])->name('ajukan_permintaan');
-    Route::post('/simpan-permintaan', [AjukanPermintaanController::class, 'simpan_permintaan'])->name("simpan_permintaan");
-    Route::get('/lacak-permintaan', [LacakPermintaanController::class, 'lacak_permintaan'])->name('lacak_permintaan');
-    Route::patch('/lacak-permintaan/{id}', [LacakPermintaanController::class, 'update_status_permintaan'])->name('update_status_permintaan');
-    Route::get('/riwayat-permintaan', [RiwayatPermintaanController::class, 'riwayat_permintaan'])->name('riwayat_permintaan');
-    Route::get('/notifikasi-permintaan', [PermintaanController::class, 'getNotifikasi'])->name('notifikasi');
+    Route::get('/ajukan-permintaan', [AjukanPermintaanController::class, 'ajukanPermintaan'])->name('ajukan_permintaan');
+    Route::post('/simpan-permintaan', [AjukanPermintaanController::class, 'simpanPermintaan'])->name("simpan_permintaan");
+    Route::get('/lacak-permintaan', [LacakPermintaanController::class, 'lacakPermintaan'])->name('lacak_permintaan');
+    Route::patch('/lacak-permintaan/{id}', [LacakPermintaanController::class, 'updateStatusPermintaan'])->name('update_status_permintaan');
+    Route::get('/riwayat-permintaan', [RiwayatPermintaanController::class, 'riwayatPermintaan'])->name('riwayat_permintaan');
+    Route::get('/notifikasi/unread', [NotifikasiController::class, 'belumDibaca'])->name('notifikasi_unread');
+    Route::post('/notifikasi/{id}/read', [NotifikasiController::class, 'tandaiDibaca'])->name('notifikasi_read');
+    Route::post('/notifikasi/read-all', [NotifikasiController::class, 'dibacaSemua'])->name('notifikasi_read_all');
 });
 
 // Login pegawai (tanpa middleware)
